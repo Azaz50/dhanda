@@ -18,6 +18,7 @@ void ui_party_show(struct dhanda *app)
 	sky();
 	bold();
 	centreprint("DHANDA > PARTY > SHOW");
+
 	printf("\n\n");
 	reset();
 
@@ -30,6 +31,7 @@ void ui_party_show(struct dhanda *app)
 	printf("\n\n");
 
 	printf("   PHONE NO   : %s               \n\n", p->phone);
+	get_time(p->cat);
 	reset();
 	
 }

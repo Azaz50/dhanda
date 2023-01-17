@@ -26,8 +26,25 @@
 #define debug_print(fmt)
 #endif
 
-int get_line(char line[], int size);
+int get_line_string(char line[], int size);
+
 int get_string(char line[], int size);
+
+void input_valid_string(char *input, size_t size, int (*validator)(char *));
+int validate_name(char *str);
+
+void input_phone(char *input, int (*validator)(char *));
+int validate_phone(char *str);
+
+void input_amount(int *input, int (*validator)(char *));
+int validate_amount(char *str);
+
+void title_case(char *str);
+
+void get_time(time_t t);
+
+
+
 void sky();
 void red();
 void yellow();

@@ -11,9 +11,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
+#include<ctype.h>
 
 #include <dhanda/list.h>
 #include <dhanda/util.h>
+
 
 #define MAXLINE 1000
 #define MAXCMDARG 32

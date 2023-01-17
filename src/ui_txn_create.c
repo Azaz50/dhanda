@@ -27,13 +27,13 @@ void ui_txn_create(struct dhanda *app)
 	scanf("%c", &ch);
 	printf("\n");
 	printf("   DESC     : ");
-	get_line(t.desc, 256);
+	get_string(t.desc, 256);
 	printf("\n");
 	/*if(len > 0)
 		strcpy(t.desc, line);*/
 	//scanf("%s", t.desc);
 
-	t.cat = time(NULL);
+	time(&t.cat);
 	txn_insert_in_list(app, &t);
 	puts("");
 }
