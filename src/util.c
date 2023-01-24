@@ -1,6 +1,7 @@
 #include <dhanda/dhanda.h>
 #include <dhanda/util.h>
 #include <regex.h>
+#include <dhanda/party.h>
 
 int get_line(char line[], int size)
 {
@@ -146,12 +147,46 @@ void title_case(char *str){
 
 void get_time(time_t cat){
 	
-    cat = time(NULL);
     struct tm *t = localtime(&cat);
     char iso_time[100];
     strftime(iso_time, sizeof iso_time, "%Y-%m-%d", t);
-    printf("CREATED AT : %s\n", iso_time);
+    printf(" CREATED AT : %s\n", iso_time);
 
+}
+
+void input_pid(dhanda *app, int *pid, int (*validator)(char *)){
+	char pd[10];
+	struct party result;
+
+	while(1){
+		printf("> ");
+		if(validator(pd) == 0){
+			long ret = strtol(pd, NULL, 10);
+			*pid = (int)ret;
+			if(party_findbyid(app, *pid, &result) == 1){
+				break;
+			}
+			printf("Invalid input\n");
+		}
+	}
+}
+
+int validate_pid(char *str){
+
+	char *pattern = "^[0-9]{1,10}$";
+	char buff[1024];
+	int err;
+	regex_t rgx;
+
+	if((err = regcomp(&rgx, pattern, REG_EXTENDED)) != 0){
+		regerror(err, &rgx, buff, sizeof(buff));
+		printf("%s\n", buff);
+		return -1;
+	}
+	if(regexec(&rgx, str, 0, NULL, 0) == REG_NOMATCH){
+		return -1;
+	}
+	return 0;
 }
 
 

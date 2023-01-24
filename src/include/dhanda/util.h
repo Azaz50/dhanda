@@ -1,5 +1,8 @@
 #ifndef _DHANDA_UTIL_H_
 #define _DHANDA_UTIL_H_
+#include <dhanda/dhanda.h>
+#include <dhanda/party.h>
+
 
 #define ANSI_COLOR_RED      "\x1b[31m"
 #define ANSI_COLOR_GREEN    "\x1b[32m"
@@ -26,7 +29,7 @@
 #define debug_print(fmt)
 #endif
 
-int get_line_string(char line[], int size);
+int get_line(char line[], int size);
 
 int get_string(char line[], int size);
 
@@ -43,6 +46,9 @@ void title_case(char *str);
 
 void get_time(time_t t);
 
+void input_pid(dhanda *app, int *pid, int (*validator)(char *));
+int validate_pid(char *str);
+
 
 
 void sky();
@@ -54,10 +60,10 @@ void bold();
 void warning();
 void error();
 void success();
-void print_success(char s[100]);
-void print_error(char s[100]);
-void print_warning(char s[100]);
+void print_success(char *s);
+void print_error(char *s);
+void print_warning(char *s);
 
-void centreprint(char s[100]);
+void centreprint(char *s);
 
 #endif
