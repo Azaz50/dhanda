@@ -19,9 +19,12 @@ void ui_party_list(struct dhanda *app)
 	printf("   %-13s %-20s %-20s %-15s %-10s\n\n\n", "ID", "FIRST NAME", "LAST NAME", "AMOUNT", "PHONE");
 	reset();
 	while(ptr){
+
 		p = (party *) ptr->data;
 		printf("   %-13d %-20s %-20s %-15d %-10s\n\n", p->id, p->fname, p->lname, p->amount, p->phone);
+		
 		ptr = ptr->next;
 	}
+
 }
 

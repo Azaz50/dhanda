@@ -24,14 +24,27 @@ void ui_party_show(struct dhanda *app)
 
 	grey();
 	printf("   ID NO      : %d               \n\n", p->id);
-
+    title_case(p->fname);
 	printf("   FIRST NAME : %s               ", p->fname);
+	
+	
 	printf("\n\n");
+
+    title_case(p->lname);
 	printf("   LAST NAME  : %s               ", p->lname);
 	printf("\n\n");
 
 	printf("   PHONE NO   : %s               \n\n", p->phone);
-	get_time(p->cat);
+	printf("   AMOUNT     : %d                \n\n", p->amount);
+
+	printf("   CREATED AT : ");
+	created_at(p->cat);
+
+	printf("\n");
+
+	printf("   UPDATED AT : ");
+	updated_at(p->uat);
+
 	reset();
 	
 }

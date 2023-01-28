@@ -20,12 +20,10 @@ void ui_party_create(struct dhanda *app)
 	reset();
 	grey();
 	
-	
 	printf("   FIRST NAME :  ");
 	//get_string(p.fname, sizeof(p.fname));
 	input_valid_string(p.fname, sizeof(p.fname), validate_name);
 	title_case(p.fname);
-	
 	
 	printf("   LAST NAME  :  ");
 	//get_string(p.lname, sizeof(p.lname));
@@ -45,6 +43,8 @@ void ui_party_create(struct dhanda *app)
         
     printf("\n");
 	time(&p.cat);
+	time(&p.uat);
+
 	reset(); 
 	
 	party_insert_in_list(app, &p);

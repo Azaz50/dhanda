@@ -44,7 +44,9 @@ int validate_amount(char *str);
 
 void title_case(char *str);
 
-void get_time(time_t t);
+//void get_time(time_t t);
+void created_at(time_t t);
+void updated_at(time_t t);
 
 void input_pid(dhanda *app, int *pid, int (*validator)(char *));
 int validate_pid(char *str);

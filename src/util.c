@@ -145,7 +145,7 @@ void title_case(char *str){
 	}
 }
 
-void get_time(time_t cat){
+/*void get_time(time_t cat){
 	
     struct tm *t = localtime(&cat);
     char iso_time[100];
@@ -153,6 +153,36 @@ void get_time(time_t cat){
     printf(" CREATED AT : %s\n", iso_time);
 
 }
+*/
+
+void created_at(time_t t) 
+{
+	struct tm *tm;
+	char timestr[100];
+
+
+	tm = localtime(&t);
+
+	strftime(timestr, sizeof(timestr), "%Y-%m-%d %T", tm);
+
+	printf("%s\n", timestr);
+
+}
+
+void updated_at(time_t t)
+{
+	struct tm *tm;
+	char timestr[100];
+
+
+	tm = localtime(&t);
+
+	strftime(timestr, sizeof(timestr), "%Y-%m-%d %T", tm);
+
+	printf("%s\n", timestr);
+
+}
+
 
 void input_pid(dhanda *app, int *pid, int (*validator)(char *)){
 	char pd[10];
