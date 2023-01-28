@@ -1,6 +1,8 @@
 #include <dhanda/dhanda.h>
 #include <dhanda/party.h>
+#include <sys/types.h>
 #include <dhanda/ui.h>
+#include <regex.h>
 
 
 void ui_party_edit(struct dhanda *app)
@@ -31,16 +33,25 @@ void ui_party_edit(struct dhanda *app)
 
 
 	printf("FIRST NAME :  ");
-	get_string(new_party->fname, sizeof(new_party->fname));
+	input_valid_string(new_party->fname, sizeof(new_party->fname), validate_name);
+	title_case(new_party->fname);
+	//get_string(new_party->fname, sizeof(new_party->fname));
 
 	printf("LAST NAME  :  ");
-	get_string(new_party->lname, sizeof(new_party->lname));
+	input_valid_string(new_party->lname, sizeof(new_party->lname), validate_name);
+	title_case(new_party->lname);
+	//get_string(new_party->lname, sizeof(new_party->lname));
 
 	printf("PHONE      :  ");
-	get_string(new_party->phone, sizeof(new_party->phone));
+	input_valid_string(new_party->phone, sizeof(new_party->phone), validate_phone);
+	//get_string(new_party->phone, sizeof(new_party->phone));
 	
 	printf("AMOUNT     :  ");
-	scanf("%d", &new_party->amount);
+	input_amount(&new_party->amount, validate_amount);
+
+	printf("\n");
+
+	
 }
 
 

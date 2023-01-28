@@ -11,7 +11,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
-#include<ctype.h>
+#include <ctype.h>
+#include <regex.h>
 
 #include <dhanda/list.h>
 

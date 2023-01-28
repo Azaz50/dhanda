@@ -21,5 +21,9 @@ int party_update(dhanda *app, party *old_party, struct party *new_party)
 			 }
 		 }
 		 
-		 return matched;
+		 if(matched == -1){
+		 	return -1;
+		 }
+
+		 return 0;
  }		 

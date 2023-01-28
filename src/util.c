@@ -137,7 +137,7 @@ int validate_amount(char *str){
 
 void title_case(char *str){
 	str[0] = toupper(str[0]);
-	for(int i = 1; str[i] != '0'; ++i){
+	for(int i = 1; str[i] != '\0'; ++i){
 		if(str[i] == ' '){
 			str[i+1] = toupper(str[i+1]);
 
