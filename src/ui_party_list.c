@@ -21,6 +21,10 @@ void ui_party_list(struct dhanda *app)
 	while(ptr){
 
 		p = (party *) ptr->data;
+        title_case(p->fname);
+        title_case(p->lname);
+
+
 		printf("   %-13d %-20s %-20s %-15d %-10s\n\n", p->id, p->fname, p->lname, p->amount, p->phone);
 		
 		ptr = ptr->next;
