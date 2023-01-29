@@ -24,9 +24,9 @@ void ui_txn_create(dhanda *app)
 	printf("\n");
 	printf("[O FOR CRED, 1 FOR DEBT]\n");
 	printf("   TYPE     : ");
-	scanf("%d", &t.type);
-	scanf("%c", &ch);
+	input_txn_type(&t.type, validate_type);
 	printf("\n");
+	
 	printf("   DESC     : ");
 	get_string(t.desc, 256);
 	printf("\n");

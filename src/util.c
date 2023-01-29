@@ -249,6 +249,48 @@ void unispace_separate(char *str)
 	}
 
 
+void input_txn_type(int *type, int (*validator) (char *))
+	{
+		char t[10];
+
+		while(1) {
+			printf("> ");
+			get_string(t, 10);
+			
+			if(validator(t) == 0) {
+				long ret = strtol(t, NULL, 10);
+				*type = (int) ret;
+				break;
+			}
+		
+			printf("Invalid input\n");
+		}
+	}
+
+	int validate_type(char *str)
+	{
+		//regular expression
+		char *pattern = "^[0-1]{1}$";
+		char buf[1024];
+		int err;
+
+		regex_t rgx;
+
+		if ((err = regcomp(&rgx, pattern, REG_EXTENDED)) != 0) {
+			 regerror(err, &rgx, buf, sizeof(buf));
+			 printf("%s\n", buf);
+			 return -1;
+		}
+
+		if (regexec(&rgx, str, 0, NULL, 0) == REG_NOMATCH) {
+			return -1;
+		}	
+
+		return 0;
+	}
+
+
+
 
 //COLORS FUNCTIONS
 void sky()

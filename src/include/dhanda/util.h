@@ -53,6 +53,9 @@ int validate_pid(char *str);
 
 void unispace_separate(char *str);
 
+void input_txn_type(int *type, int (*validator) (char *));
+int validate_type(char *str);
+
 
 
 void sky();
