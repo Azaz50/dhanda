@@ -35,16 +35,14 @@ void ui_party_edit(struct dhanda *app)
 	printf("FIRST NAME :  ");
 	input_valid_string(new_party->fname, sizeof(new_party->fname), validate_name);
 	title_case(new_party->fname);
-	//get_string(new_party->fname, sizeof(new_party->fname));
+	
 
 	printf("LAST NAME  :  ");
 	input_valid_string(new_party->lname, sizeof(new_party->lname), validate_name);
 	title_case(new_party->lname);
-	//get_string(new_party->lname, sizeof(new_party->lname));
 
 	printf("PHONE      :  ");
 	input_valid_string(new_party->phone, sizeof(new_party->phone), validate_phone);
-	//get_string(new_party->phone, sizeof(new_party->phone));
 	
 	printf("AMOUNT     :  ");
 	input_amount(&new_party->amount, validate_amount);

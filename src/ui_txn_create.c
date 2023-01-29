@@ -17,11 +17,9 @@ void ui_txn_create(dhanda *app)
 	printf("\n\n");
 	reset();
 	printf("   PARTY ID : ");
-	//scanf("%d", &t.party_id);
 	input_pid(app, &t.party_id, validate_pid);
 	printf("\n");
 	printf("   AMOUNT   : ");
-	//scanf("%d", &t.amount);
 	input_amount(&t.amount, validate_amount);
 	printf("\n");
 	printf("[O FOR CRED, 1 FOR DEBT]\n");
@@ -32,9 +30,6 @@ void ui_txn_create(dhanda *app)
 	printf("   DESC     : ");
 	get_string(t.desc, 256);
 	printf("\n");
-	/*if(len > 0)
-		strcpy(t.desc, line);*/
-	//scanf("%s", t.desc);
 
 	time(&t.cat);
 	txn_insert_in_list(app, &t);
