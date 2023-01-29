@@ -219,6 +219,36 @@ int validate_pid(char *str){
 	return 0;
 }
 
+void unispace_separate(char *str) 
+	{
+		int i = 0;
+
+		char last = 'a';
+		char res[strlen(str)];
+
+		res[0] = '\0';
+
+		while (str[i] == ' ') {
+			i++;
+		}
+
+		while (str[i] != '\0') {
+			char ch = str[i];
+			if (ch != ' ') {
+				strncat(res, &ch, 1);
+			} else if(last != ' ') {
+					strncat(res, &ch, 1);
+			}
+
+			last = ch;
+			i++;
+		}
+
+		strcpy(str, res);
+
+	}
+
+
 
 //COLORS FUNCTIONS
 void sky()

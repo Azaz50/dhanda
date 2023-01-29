@@ -51,6 +51,8 @@ void updated_at(time_t t);
 void input_pid(dhanda *app, int *pid, int (*validator)(char *));
 int validate_pid(char *str);
 
+void unispace_separate(char *str);
+
 
 
 void sky();
