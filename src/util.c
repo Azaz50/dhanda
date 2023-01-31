@@ -145,15 +145,6 @@ void title_case(char *str){
 	}
 }
 
-/*void get_time(time_t cat){
-	
-    struct tm *t = localtime(&cat);
-    char iso_time[100];
-    strftime(iso_time, sizeof iso_time, "%Y-%m-%d", t);
-    printf(" CREATED AT : %s\n", iso_time);
-
-}
-*/
 
 void created_at(time_t t) 
 {
@@ -246,7 +237,7 @@ void unispace_separate(char *str)
 
 		strcpy(str, res);
 
-	}
+}
 
 
 void input_txn_type(int *type, int (*validator) (char *))
@@ -267,7 +258,7 @@ void input_txn_type(int *type, int (*validator) (char *))
 		}
 	}
 
-	int validate_type(char *str)
+int validate_type(char *str)
 	{
 		//regular expression
 		char *pattern = "^[0-1]{1}$";
@@ -287,7 +278,7 @@ void input_txn_type(int *type, int (*validator) (char *))
 		}	
 
 		return 0;
-	}
+}
 
 
 

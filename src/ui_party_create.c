@@ -36,8 +36,8 @@ void ui_party_create(struct dhanda *app)
 	
 
 	printf("  AMOUNT     :  ");
-        //scanf("%d",&p.amount);
-        input_amount(&p.amount, validate_amount);
+    //scanf("%d",&p.amount);
+    input_amount(&p.amount, validate_amount);
         
        
         

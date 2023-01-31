@@ -105,7 +105,11 @@ dhanda_init_app(struct dhanda *app)
 	int ret;
 	struct stat buf;
 	struct passwd *pw;
-	char base_path[256], party_filepath[256], txn_filepath[256];
+	char base_path[256], db_filepath[256];
+	char *err = NULL;
+	struct party p;
+
+
 
 	/* Setup data storage directory (in user's home dir) */
 	if ((pw = getpwuid(getuid())) == NULL) {
@@ -128,30 +132,54 @@ dhanda_init_app(struct dhanda *app)
 
 	app->context = SCREEN_HOME;
 
-	strcpy(party_filepath, base_path);
-	strcat(party_filepath, "/");
-	strcat(party_filepath, DHANDA_PARTY_DB_FILE);
 
-	strcpy(txn_filepath, base_path);
-	strcat(txn_filepath, "/");
-	strcat(txn_filepath, DHANDA_TXN_DB_FILE);
+	strcpy(db_filepath, base_path);
+	strcat(db_filepath, "/");
+	strcat(db_filepath, DHANDA_DB_FILE);
 
-	app->party_fp = fopen(party_filepath, "r+b");
-	app->txn_fp   = fopen(txn_filepath, "r+b");
-
-	if (app->party_fp == NULL && errno == ENOENT)
-		app->party_fp = fopen(party_filepath, "w+b");
-	if (app->txn_fp == NULL && errno == ENOENT)
-		app->txn_fp = fopen(txn_filepath, "w+b");
-
-	if (app->party_fp == NULL) {
-		fprintf(stderr, "Error in file '%s': %s\n", party_filepath, strerror(errno));
+	ret = sqlite3_open(db_filepath, &app->db);
+	if (ret) {
+		fprintf(stderr, "sqlite3_open: %s\n", sqlite3_errmsg(app->db));
 		exit(EXIT_FAILURE);
 	}
-	if (app->txn_fp == NULL) {
-		fprintf(stderr, "Error in file '%s': %s\n", txn_filepath, strerror(errno));
-		exit(EXIT_FAILURE);
+
+	ret = sqlite3_exec(app->db, NULL, NULL, NULL, &err);
+	if (ret != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_exec: %s\n", err);
 	}
+
+	// Create tables for party, txn and user
+
+	char *sql_parties = "CREATE TABLE parties(id int unsigned AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(64) NOT NULL,"
+	" last_name VARCHAR(64) NOT NULL,  phone VARCHAR(64) NOT NULL, amount VARCHAR(64) NOT NULL, "
+	"created_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);";
+
+	ret = sqlite3_exec(app->db, sql_parties, NULL, NULL, &err);
+	if(ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec: %s\n", err);
+
+	}
+
+	char *sql_trans = "CREATE TABLE transactions(id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, amount INT, type CHAR(2),"
+	" party_id INT UNSIGNED, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIN KEY(party_id) REFERENCES parties(Id));";
+
+
+	ret = sqlite3_exec(app->db, sql_trans, NULL, NULL, &err);
+	if(ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec: %s\n", err);
+
+	}
+
+
+	char *sql_user = "CREATE TABLE user(email VARCHAR(64) NOT NULL, passward VARCHAR(64) NOT NULL);";
+
+	ret = sqlite3_exec(app->db, sql_user, NULL, NULL, &err);
+	if(ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec: %s\n", err);
+
+	}
+
+
 
 	app->party_list = list_create(sizeof(party));
 	app->txn_list 	= list_create(sizeof(txn));
