@@ -56,6 +56,11 @@ void unispace_separate(char *str);
 void input_txn_type(int *type, int (*validator) (char *));
 int validate_type(char *str);
 
+int print_user(void *not_used, int ncols, char **values, char **fields);
+
+time_t updated_time(time_t t);
+time_t created_time(time_t t);
+
 
 
 void sky();

@@ -107,7 +107,6 @@ dhanda_init_app(struct dhanda *app)
 	struct passwd *pw;
 	char base_path[256], db_filepath[256];
 	char *err = NULL;
-	struct party p;
 
 
 
@@ -150,8 +149,8 @@ dhanda_init_app(struct dhanda *app)
 
 	// Create tables for party, txn and user
 
-	char *sql_parties = "CREATE TABLE parties(id int unsigned AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(64) NOT NULL,"
-	" last_name VARCHAR(64) NOT NULL,  phone VARCHAR(64) NOT NULL, amount VARCHAR(64) NOT NULL, "
+	char *sql_parties = "CREATE TABLE parties(id int unsigned AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(64) NOT NULL,"
+	" lname VARCHAR(64),  phone VARCHAR(64) NOT NULL, amount INT NOT NULL, "
 	"created_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);";
 
 	ret = sqlite3_exec(app->db, sql_parties, NULL, NULL, &err);
@@ -160,8 +159,9 @@ dhanda_init_app(struct dhanda *app)
 
 	}
 
-	char *sql_trans = "CREATE TABLE transactions(id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, amount INT, type CHAR(2),"
-	" party_id INT UNSIGNED, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIN KEY(party_id) REFERENCES parties(Id));";
+	char *sql_trans = "CREATE TABLE transactions(id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, amount INT NOT NULL, type CHAR(2),"
+	" party_id INT UNSIGNED, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+	"updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIN KEY(party_id) REFERENCES parties(Id));";
 
 
 	ret = sqlite3_exec(app->db, sql_trans, NULL, NULL, &err);

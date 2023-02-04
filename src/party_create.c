@@ -3,35 +3,60 @@
 
 int party_add(dhanda *app, party *party)
 {
-      struct party p;
-      int new_id;
-      int ret1, ret2;
+     struct party p;
+     char local_sql[1024];
+     char *err = 0;
+     int ret;
       
+    sprintf(local_sql, "INSERT INTO parties(fname, lname, phone, amount) VALUES('%s', '%s', '%ld', '%ld')",
+                                                   "party->fname, party->lname, party->phone, party->amount)";
+                           
+    ret = sqlite3_exec(db, local_sql, NULL, NULL, &err);
 
-      int cur_pos = 0 , final_pos = 0;
+     if (ret != SQLITE_OK) {
+          fprintf(stderr, "sqlite3_exec: %s\n", err);
+          return -1;
+     } else {
+          return 0;
+     }   
+   
+   char *sql =  "INSERT INTO 'parties' ADD COLUMN
+                (
+                   'created_at' DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                   'updated_at' DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    
+                )
+                 AFTER 'amount';"
 
-      debug_print("");
+    sprintf(local_sql, sql, party->cat, party->uat);
 
-      fseek(app->party_fp, 0, SEEK_END);
-      if(!ftell(app->party_fp)) {
-           new_id = 1; 
-      }else{
-           fseek(app->party_fp, -sizeof(*party), SEEK_END);
-           ret1 = fread(&p, sizeof(p), 1, app->party_fp);
-           if(ret1 != 1)
-               return -1; 
-          new_id = p.id;
-          new_id++; 
-     }
-      party->id = new_id;
+     if (ret != SQLITE_OK) {
+          fprintf(stderr, "sqlite3_exec: %s\n", err);
+          return -1;
+     } else {
+          return 0;
+     }   
 
-      cur_pos = ftell(app->party_fp);
-      ret2 = fwrite(party, sizeof(*party), 1, app->party_fp);
-      final_pos = ftell(app->party_fp);
-
-      if(ret1 == sizeof(*party) && ret2 == sizeof(*party))
-	    return 0;
-      else
-	    return -1;
 }
 
+int party_add(dhanda *app, party *party)
+{
+    char local_sql[1024];
+    char *err = 0;
+    int ret;
+
+    char *cat = created_time(party->cat);
+    char *uat = updated_time(party->uat);
+
+    sprintf(local_sql, "INSERT INTO parties (fname, lname, phone, amount, created_at, updated_at) VALUES ('%s', '%s', '%ld', '%ld', '%s', '%s')",
+            party->fname, party->lname, party->phone, party->amount, cat, uat);
+
+    ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
+
+    if (ret != SQLITE_OK) {
+        fprintf(stderr, "sqlite3_exec: %s\n", err);
+        return -1;
+    } else {
+        return 0;
+    }
+}

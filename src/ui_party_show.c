@@ -7,10 +7,10 @@ void ui_party_show(struct dhanda *app)
 {
 	int id;
 	party *p;
-	char fname[32];
-	char lname[32];
-	char phone[12];
-	int amount;
+
+	//char local_sql[1024];
+    char *err = 0;
+    int ret;
 
 	debug_print("");
 	p = party_first_in_list(app);
@@ -21,9 +21,9 @@ void ui_party_show(struct dhanda *app)
 
 	printf("\n\n");
 	reset();
-
 	grey();
-	printf("   ID NO      : %d               \n\n", p->id);
+
+	/*printf("   ID NO      : %d               \n\n", p->id);
     title_case(p->fname);
 	printf("   FIRST NAME : %s               ", p->fname);
 	
@@ -44,7 +44,22 @@ void ui_party_show(struct dhanda *app)
 
 	printf("   UPDATED AT : ");
 	updated_at(p->uat);
+*/
+	
+	char *user_select_sql = "SELECT * FROM parties";
+	ret = sqlite3_exec(app->db, user_select_sql, print_user, NULL, &err);
+
+	if(ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec: %s\n", err);
+		goto cleanup;
+	}
+
+	cleanup:
+	sqlite3_close(db);
+	if(err)
+		sqlite3_free(err);
+
+	return 0;
 
 	reset();
-	
 }

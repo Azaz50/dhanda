@@ -4,7 +4,12 @@
 
 int txn_add(dhanda *app, txn *txn)
 {
-	struct txn temp;
+
+	char local_sql[1024];
+    char *err = 0;
+    int ret;
+
+	/*struct txn temp;
 	int init_posn, fin_posn, txn_id, ret;
 	debug_print("");
 
@@ -29,5 +34,21 @@ int txn_add(dhanda *app, txn *txn)
 		return -1;
 	}
 
-	return 0;
+	return 0;*/
+
+
+	char *cat = created_time(txn->cat);
+
+	sprintf(local_sql, "INSERT INTO transactios(id, amount, created_at, type, desc, party_id) VALUES
+		('%d', '%d', '%s', '%s', '%s', '%d'), txn->id, txn->amount, cat, txn->type, txn->desc, txn->party_id");
+
+	ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
+
+	 if (ret != SQLITE_OK) {
+        fprintf(stderr, "sqlite3_exec: %s\n", err);
+        return -1;
+    } else {
+        return 0;
+    }
+
 }
