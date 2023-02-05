@@ -5,36 +5,9 @@
 int txn_add(dhanda *app, txn *txn)
 {
 
-	char local_sql[1024];
+    char local_sql[1024];
     char *err = 0;
     int ret;
-
-	/*struct txn temp;
-	int init_posn, fin_posn, txn_id, ret;
-	debug_print("");
-
-	fseek(app->txn_fp, 0, SEEK_END);
-	if (ftell(app->txn_fp)) {
-		fseek(app->txn_fp, -sizeof(*txn), SEEK_END);
-		ret = fread(&temp, sizeof(*txn), 1, app->txn_fp);
-		if (ret != 1) {
-			return -1;
-		}
-		txn_id = temp.id;
-		txn_id++;
-	} else {
-		txn_id = 1;
-	}
-
-	txn->id = txn_id;
-
-	init_posn = ftell(app->txn_fp);
-	ret = fwrite(txn, sizeof(*txn), 1, app->txn_fp);
-	if (ret != 1) {
-		return -1;
-	}
-
-	return 0;*/
 
 
 	char *cat = created_time(txn->cat);
