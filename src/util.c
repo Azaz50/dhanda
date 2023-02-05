@@ -177,7 +177,7 @@ void updated_at(time_t t)
 time_t created_time(time_t t)
 {
 	struct tm *tm;
-	char timestr[100];
+	char *timestr = malloc(sizeof(char) * 128);
 
 	tm = localtime(&t);
 
@@ -190,11 +190,13 @@ time_t created_time(time_t t)
 time_t updated_time(time_t t)
 {
 	struct tm *tm;
-	char timestr[100];
+	
+	char *timestr = malloc(sizeof(char) * 128);
 
 	tm = localtime(&t);
 
 	strftime(timestr, sizeof(timestr), "%Y-%m-%d %T", tm);
+	
 	return timestr;
 
 }
