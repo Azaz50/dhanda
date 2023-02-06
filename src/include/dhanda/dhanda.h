@@ -68,5 +68,6 @@ void dhanda_app_print_helpline(dhanda *app);
 void dhanda_parse_cmd_line(cmdline *cmd);
 void dhanda_app_cmd_handle(dhanda *app);
 void dhanda_app_render(dhanda *app);
+static void dhanda_db_init(dhanda *app);
 
 #endif

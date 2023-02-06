@@ -3,7 +3,7 @@
 int party_add(dhanda *app, party *party)
 {
     char local_sql[1024];
-    char *err = 0;
+    char *err = NULL;
     int ret;
 
     char *cat = created_time(party->cat);
@@ -15,9 +15,12 @@ int party_add(dhanda *app, party *party)
     ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
 
     if (ret != SQLITE_OK) {
-        fprintf(stderr, "sqlite3_exec: %s\n", err);
-        return -1;
+        fprintf(stderr, "party_create(): sqlite3_exec error: %s\n", err);
+        ret = -1;
     } else {
-        return 0;
+        ret = 0;
     }
+    free(err);
+
+    return ret;
 }
