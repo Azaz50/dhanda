@@ -149,36 +149,6 @@ dhanda_init_app(struct dhanda *app)
 
 	// Create tables for party, txn and user
 
-	char *sql_parties = "CREATE TABLE parties(id int unsigned AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(64) NOT NULL,"
-	" lname VARCHAR(64),  phone VARCHAR(64) NOT NULL, amount INT NOT NULL, "
-	"created_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);";
-
-	ret = sqlite3_exec(app->db, sql_parties, NULL, NULL, &err);
-	if(ret != SQLITE_OK){
-		fprintf(stderr, "sqlite3_exec: %s\n", err);
-
-	}
-
-	char *sql_trans = "CREATE TABLE transactions(id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, amount INT NOT NULL, type CHAR(2),"
-	" party_id INT UNSIGNED, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-	"updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIN KEY(party_id) REFERENCES parties(Id));";
-
-
-	ret = sqlite3_exec(app->db, sql_trans, NULL, NULL, &err);
-	if(ret != SQLITE_OK){
-		fprintf(stderr, "sqlite3_exec: %s\n", err);
-
-	}
-
-
-	char *sql_user = "CREATE TABLE user(email VARCHAR(64) NOT NULL, passward VARCHAR(64) NOT NULL);";
-
-	ret = sqlite3_exec(app->db, sql_user, NULL, NULL, &err);
-	if(ret != SQLITE_OK){
-		fprintf(stderr, "sqlite3_exec: %s\n", err);
-
-	}
-
 
 
 	app->party_list = list_create(sizeof(party));
