@@ -1,9 +1,5 @@
 #include<dhanda/dhanda.h>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
 int party_add(dhanda *app, party *party)
 {
     char local_sql[1024];
