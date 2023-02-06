@@ -149,7 +149,7 @@ dhanda_init_app(struct dhanda *app)
 	}
 
 	// Create tables for party, txn and user
-	dhanda_db_init(&app)
+	dhanda_db_init(&app);
 
 
 	app->party_list = list_create(sizeof(party));
