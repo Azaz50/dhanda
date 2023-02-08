@@ -1,5 +1,6 @@
 #ifndef _DHANDA_H_
 #define _DHANDA_H_
+#define _XOPEN_SOURCE 
 
 #include <stdio.h>
 #include <string.h>

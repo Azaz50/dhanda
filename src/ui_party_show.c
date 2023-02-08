@@ -23,22 +23,31 @@ void ui_party_show(struct dhanda *app)
 	reset();
 	grey();
 
+	printf("   ID NO      : %d               \n\n", p->id);
+    title_case(p->fname);
+	printf("   FIRST NAME : %s               ", p->fname);
 	
 	
-	char *user_select_sql = "SELECT * FROM parties";
-	ret = sqlite3_exec(app->db, user_select_sql, print_user, NULL, &err);
+	printf("\n\n");
 
-	if(ret != SQLITE_OK){
-		fprintf(stderr, "sqlite3_exec: %s\n", err);
-		goto cleanup;
-	}
+    title_case(p->lname);
+	printf("   LAST NAME  : %s               ", p->lname);
+	printf("\n\n");
 
-	cleanup:
-	sqlite3_close(db);
-	if(err)
-		sqlite3_free(err);
+	printf("   PHONE NO   : %s               \n\n", p->phone);
+	printf("   AMOUNT     : %d                \n\n", p->amount);
 
-	return 0;
+	printf("   CREATED AT : ");
+	created_at(p->cat);
+
+	printf("\n");
+
+	printf("   UPDATED AT : ");
+	updated_at(p->uat);
 
 	reset();
+
+	
+	return;
+
 }

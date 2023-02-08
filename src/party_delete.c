@@ -5,39 +5,26 @@
 
 
 
-int party_delete(dhanda *app, party *party)
+int party_delete(dhanda *app, party *party)        // return 1 for succes
+                                                  // return -1 for failure
 {
-	struct party temp;
-	int matched = -1;
-	int trunc_size, count = 0;
+    
+    char local_sql[1024];
+	char *err = NULL;
+    int ret;
 
-	debug_print("");
-	
-	fseek(app->party_fp, 0, SEEK_SET);
-	while(fread(&temp, sizeof(temp), 1, app->party_fp) > 0) {
-		if(party->id == temp.id) {
-			matched = 0;	
-			break;
-		}
-		count++;
-	}
 
-	if (matched == -1)
-		return 0;
 	
-	
-	while(fread(&temp, sizeof(temp), 1, app->party_fp) > 0) {
-		fseek(app->party_fp, sizeof(temp) * -2, SEEK_CUR);
-		fwrite(&temp, sizeof(temp), 1, app->party_fp);
-		fseek(app->party_fp, sizeof(temp), SEEK_CUR);
-		count++;
-	}
+	sprintf(local_sql, "DELETE FROM party WHERE id = %d", party->id);
 
-	fseek(app->party_fp, -sizeof(temp), SEEK_CUR);
-	trunc_size = sizeof(temp) * count;
-	ftruncate(fileno(app->party_fp), trunc_size);
-	
-	return matched;
+	ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
+
+    if (ret != SQLITE_OK) {
+        fprintf(stderr, "party_delete(): sqlite3_exec error: %s\n", err);
+        ret = -1;
+    } 
+
+    return 0;
 }
 			
 	

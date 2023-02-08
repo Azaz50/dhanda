@@ -5,15 +5,14 @@
 int txn_add(dhanda *app, txn *txn)
 {
 
-    char local_sql[1024];
+    /*char local_sql[1024];
     char *err = 0;
     int ret;
 
 
-	char *cat = created_time(txn->cat);
+	char *cat = (char *)created_time(txn->cat);
 
-	sprintf(local_sql, "INSERT INTO transactios(id, amount, created_at, type, desc, party_id) VALUES
-		('%d', '%d', '%s', '%s', '%s', '%d'), txn->id, txn->amount, cat, txn->type, txn->desc, txn->party_id");
+    sprintf(local_sql, "INSERT INTO transactios(amount, created_at, type, desc, party_id) VALUES ('%d', '%d', '%s', '%c', '%s', '%d')", txn->id, txn->amount, cat, txn->type, txn->desc, txn->party_id);
 
 	ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
 
@@ -22,6 +21,8 @@ int txn_add(dhanda *app, txn *txn)
         return -1;
     } else {
         return 0;
-    }
+    }*/
+
+    return 0;
 
 }

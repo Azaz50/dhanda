@@ -1,98 +1,128 @@
 #include <dhanda/dhanda.h>
 #include <dhanda/party.h>
 
+int 
+cb_party_list(void *list, int ncols, char **values, char **fields);
+int
+cb_party_struct(void *ptr, int ncols, char **values, char **fields);
 
 
-
-int party_findbyid(dhanda *app, int id, party *result)
+int party_findbyid(dhanda *app, int id, party *result)   
 {
+
+	char sql[256];                                             
 	int ret;
-	int found = 0;
+	char *err = NULL;
 
-	debug_print("");
-	
-	fseek(app->party_fp, 0, SEEK_SET);
-	while((ret = fread(result, sizeof(party), 1, app->party_fp)) > 0) {
-		if(id == result->id) {
-			found = 1;
-			break;
-		}
-	}
-	if (ferror(app->party_fp))
-		found = -1;
 
-	return found;
+	sprintf(sql, "SELECT * FROM parties WHERE id = %d", id);
+
+	result->id = 0;
+	ret = sqlite3_exec(app->db, sql, cb_party_struct, (void *)result, &err);
+
+	 if (ret != SQLITE_OK) {
+        fprintf(stderr, "party_findbyid(): sqlite3_exec error: %s\n", err);
+        ret = -1;
+    } 
+
+    if(result->id == 0){
+    	return 0;
+    }
+
+    return 1;
+
 }
 
 
 int party_search(dhanda *app, char *query, struct list *result)
 {
-	party temp;
-	Node *node;
-	int matched = 0;
+	int ret;
+	char sql[1024];
+	char *err = NULL;
 
-	debug_print("");
-	
-	fseek(app->party_fp, 0, SEEK_SET); 
-	while(fread(&temp, sizeof(temp), 1, app->party_fp) > 0) {
-		if(strstr(temp.phone, query)) {
-			matched = 1;
-			node = list_new_node(result, (void *) &temp);
-			list_insert_end(result, node);
-		}
-		
-		if(!node)
-			break;
-	}
-	return matched;
+	sprintf(sql, "SELECT * FROM parties WHERE phone LIKE '%%%s%%' OR fname LIKE '%%%s%%'", query, query);
+    
+    ret = sqlite3_exec(app->db, sql, cb_party_struct, (void *)result, &err);
+    if (ret != SQLITE_OK){
+    	fprintf(stderr, "sqlite3_exec: %s\n", err);
+    	return -1;
+    }
+
+    if (result->head == NULL){
+    	return -1;
+    }
+
+	return 0;
 	
 }
 			
 
 int party_get(dhanda *app, party_filter filter, struct list *result)
 {
-	List *list;
-	party temp;
-	int count = 0, offset;
-	Node *node;
+	
 
-	debug_print("");
-	
-	/*offset = (filter.page - 1) * filter.items * sizeof(party);
-	fseek(app->party_fp, offset * -1, SEEK_END);*/
-	
-	fseek(app->party_fp, 0, SEEK_SET);
-	while(fread(&temp, sizeof(temp), 1, app->party_fp) > 0) {
-		if(count >= filter.items)
-			break;
-			
-		node = list_new_node(result, (void *) &temp);
-		list_insert_end(result, node);
-		count++;
-		
-		if(node == NULL) 
-			break;
-	}
-	
-	return count;
+	char local_sql[1024];
+    char *err = NULL;
+    int ret;
+    
+	sprintf(local_sql, "SELECT * FROM parties");
+
+	ret = sqlite3_exec(app->db, local_sql, cb_party_list, (void *)result, &err);
+
+	 if (ret != SQLITE_OK) {
+        fprintf(stderr, "party_get(): sqlite3_exec error: %s\n", err);
+        return -1;
+    }
+
+    if(result->head == NULL){
+    	return -1;
+    }
+
+    return 1;
+
 }
-		
-
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int
+cb_party_list(void *list, int ncols, char **values, char **fields){
+	party p = {};
+	party *ptr;
+	Node *node;
 	
-	
+	char *cat = created_time(ptr->cat);
+    char *uat = updated_time(ptr->uat);
+
+	p.id = atoi(values[0]);
+	strcpy(p.fname, values[1]);
+	strcpy(p.lname, values[2]);
+	strcpy(p.phone, values[3]);
+	p.amount = atoi(values[4]);
+	p.cat = unix_time(values[5]);
+	p.uat = unix_time(values[6]);
+
+	node = list_new_node((struct list *) list, (void *) &p);
+	list_insert_end((struct list *) list, node);
+
+	return SQLITE_OK;
+
+}	
+
+int
+cb_party_struct(void *ptr, int ncols, char **values, char **fields){
+	party *p = (party *) ptr;
+
+	p->id = (int)atoi(values[0]);
+	strcpy(p->fname, values[1]);
+	strcpy(p->lname, values[2]);
+	strcpy(p->phone, values[3]);
+	p->amount = atoi(values[4]);
+	p->cat = unix_time(values[5]);
+	p->uat = unix_time(values[6]);
+
+	return SQLITE_OK;
+
+
+}	
+
+
+
+
 	

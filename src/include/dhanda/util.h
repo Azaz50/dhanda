@@ -2,6 +2,8 @@
 #define _DHANDA_UTIL_H_
 #include <dhanda/dhanda.h>
 #include <dhanda/party.h>
+#include <dhanda/sqlite3.h>
+
 
 
 #define ANSI_COLOR_RED      "\x1b[31m"
@@ -44,7 +46,6 @@ int validate_amount(char *str);
 
 void title_case(char *str);
 
-//void get_time(time_t t);
 void created_at(time_t t);
 void updated_at(time_t t);
 
@@ -53,13 +54,15 @@ int validate_pid(char *str);
 
 void unispace_separate(char *str);
 
-void input_txn_type(int *type, int (*validator) (char *));
+void input_txn_type(char *type, int (*validator) (char *));
 int validate_type(char *str);
 
 int print_user(void *not_used, int ncols, char **values, char **fields);
 
-time_t updated_time(time_t t);
-time_t created_time(time_t t);
+void * updated_time(time_t t);
+void * created_time(time_t t);
+
+time_t unix_time(char *timestr);
 
 
 

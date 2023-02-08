@@ -3,7 +3,7 @@
 #include <dhanda/ui.h>
 
 
-void ui_party_create(struct dhanda *app)
+void ui_party_create(dhanda *app)
 {
 	
 	party p;
@@ -24,16 +24,21 @@ void ui_party_create(struct dhanda *app)
 	input_valid_string(p.fname, sizeof(p.fname), validate_name);
 	title_case(p.fname);
 	
+	
 	printf("   LAST NAME  :  ");
 	input_valid_string(p.lname, sizeof(p.lname), validate_name);
 	title_case(p.lname);
 	
 	printf("   PHONE      :  ");
 	input_valid_string(p.phone, sizeof(p.phone), validate_phone);
+
 	
 
 	printf("  AMOUNT     :  ");
     input_amount(&p.amount, validate_amount);
+  
+
+
       
 	reset(); 
 	

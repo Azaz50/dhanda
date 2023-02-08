@@ -1,4 +1,5 @@
 #include<dhanda/dhanda.h>
+#include<dhanda/party.h>
 
 int party_add(dhanda *app, party *party)
 {
@@ -9,10 +10,10 @@ int party_add(dhanda *app, party *party)
     char *cat = created_time(party->cat);
     char *uat = updated_time(party->uat);
 
-    sprintf(local_sql, "INSERT INTO parties (fname, lname, phone, amount, created_at, updated_at) VALUES ('%s', '%s', '%ld', '%ld', '%s', '%s')",
-            party->fname, party->lname, party->phone, party->amount, cat, uat);
+    sprintf(local_sql, "INSERT INTO parties (fname, lname, phone, amount, created_at, updated_at) VALUES ('%s', '%s', '%s', '%d', '%s', '%s')",party->fname, party->lname, party->phone, party->amount, cat, uat);
 
     ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
+
 
     if (ret != SQLITE_OK) {
         fprintf(stderr, "party_create(): sqlite3_exec error: %s\n", err);
@@ -20,6 +21,10 @@ int party_add(dhanda *app, party *party)
     } else {
         ret = 0;
     }
+    
+    party->id = sqlite3_last_insert_rowid(app->db);
+
+
     free(err);
 
     return ret;

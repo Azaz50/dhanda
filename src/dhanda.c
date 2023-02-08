@@ -143,13 +143,8 @@ dhanda_init_app(struct dhanda *app)
 		exit(EXIT_FAILURE);
 	}
 
-	ret = sqlite3_exec(app->db, NULL, NULL, NULL, &err);
-	if (ret != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_exec: %s\n", err);
-	}
-
 	// Create tables for party, txn and user
-	dhanda_db_init(&app);
+	dhanda_db_init(app);
 
 
 	app->party_list = list_create(sizeof(party));
@@ -170,16 +165,16 @@ dhanda_init_app(struct dhanda *app)
 
 static void dhanda_db_init(dhanda *app){
 	int ret;
-	char *err = NUll;
+	char *err = NULL;
 
-	Char *sql_parties = 
+	char *sql_parties = 
 	     "CREATE TABLE parties("
-	           "id INTEGER unsigned AUTO_INCREMENT PRIMARY KEY,"
+	           "id INTEGER  PRIMARY KEY AUTOINCREMENT,"
 	           "fname VARCHAR(64) NOT NULL,"
 	           "lname VARCHAR(64),"
 	           "phone VARCHAR(12) UNIQUE NOT NULL,"
 	           "amount INTEGER DEFAULT 0,"
-	           "created_At DATETIME NOT NULL,"
+	           "created_at DATETIME NOT NULL,"
 	           "updated_at DATETIME NOT NULL"
 	       ")";
 
@@ -191,11 +186,11 @@ static void dhanda_db_init(dhanda *app){
 
 	char *sql_trans = 
 	      "CREATE TABLE transactions("
-	      "id INTEGER AUTO_INCREMENT AUTO_INCREMENT PRIMARY KEY,"
+	      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
 	      "amount INTEGER DEFAULT 0,"
 	      "type CHAR(2),"
 	      "party_id INTEGER UNSIGNED,"
-	      "created_At DATETIME NOT NULL,"
+	      "created_at DATETIME NOT NULL,"
 	      "updated_at DATETIME NOT NULL,"
 	      "FOREIN KEY(party_id) REFERENCES parties(id)"
 	    ")";  

@@ -174,7 +174,7 @@ void updated_at(time_t t)
 
 }
 
-time_t created_time(time_t t)
+void * created_time(time_t t)
 {
 	struct tm *tm;
 	char *timestr = malloc(sizeof(char) * 128);
@@ -187,7 +187,7 @@ time_t created_time(time_t t)
 }
 
 
-time_t updated_time(time_t t)
+void * updated_time(time_t t)
 {
 	struct tm *tm;
 	
@@ -199,6 +199,14 @@ time_t updated_time(time_t t)
 	
 	return timestr;
 
+}
+
+time_t unix_time(char *timestr){
+	struct tm tm = {};
+	strptime(timestr, "%Y-%m-%d %T", &tm);
+
+	time_t t = mktime(&tm);
+	return t;
 }
 
 
@@ -267,7 +275,7 @@ void unispace_separate(char *str)
 }
 
 
-void input_txn_type(int *type, int (*validator) (char *))
+void input_txn_type(char *type, int (*validator) (char *))
 	{
 		char t[10];
 
@@ -306,44 +314,6 @@ int validate_type(char *str)
 
 		return 0;
 }
-
-
-int print_user(void *not_used, int ncols, char **values, char **fields){
-
-	printf("   ID     : ");
-	printf(" %d", values[0]);
-	printf("\n\n");
-
-    title_case(values[1]);
-	printf("   FIRST NAME     : ");
-	printf("%s", values[1]);
-	printf("\n\n");
-
-	title_case(values[1]);
-	printf("   LAST NAME     : ");
-	printf("%s", values[2]);
-	printf("\n\n");
-
-	printf("   PHONE     : ");
-	printf("%s", values[3]);
-	printf("\n\n");
-
-    printf("   AMOUNT     : ");
-	printf("%d", values[4]);
-	printf("\n\n");
-
-	printf("   CREATED_AT     :");
-	printf("datetime()", values[5]);
-	printf("\n\n");
-
-	printf("   UPDATED_AT     :");
-	printf("datetime()", values[6]);
-	printf("\n\n");
-
-	return SQLITE_OK;
-}
-
-
 
 
 
