@@ -16,12 +16,16 @@ void ui_txn_create(dhanda *app)
 	centreprint("DHANDA > TRANSACTION > CREATE");
 	printf("\n\n");
 	reset();
+	grey();
+	
 	printf("   PARTY ID : ");
 	input_pid(app, &t.party_id, validate_pid);
 	printf("\n");
+
 	printf("   AMOUNT   : ");
 	input_amount(&t.amount, validate_amount);
 	printf("\n");
+
 	printf("[O FOR CRED, 1 FOR DEBT]\n");
 	printf("   TYPE     : ");
 	input_txn_type(&t.type, validate_type);
@@ -31,7 +35,7 @@ void ui_txn_create(dhanda *app)
 	get_string(t.desc, 256);
 	printf("\n");
 
-	time(&t.cat);
+	//time(&t.cat);
 	txn_insert_in_list(app, &t);
 	puts("");
 }

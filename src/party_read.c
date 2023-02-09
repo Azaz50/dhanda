@@ -22,7 +22,7 @@ int party_findbyid(dhanda *app, int id, party *result)
 
 	 if (ret != SQLITE_OK) {
         fprintf(stderr, "party_findbyid(): sqlite3_exec error: %s\n", err);
-        ret = -1;
+        return -1;
     } 
 
     if(result->id == 0){
@@ -42,17 +42,17 @@ int party_search(dhanda *app, char *query, struct list *result)
 
 	sprintf(sql, "SELECT * FROM parties WHERE phone LIKE '%%%s%%' OR fname LIKE '%%%s%%'", query, query);
     
-    ret = sqlite3_exec(app->db, sql, cb_party_struct, (void *)result, &err);
+    ret = sqlite3_exec(app->db, sql, cb_party_list, (void *)result, &err);
     if (ret != SQLITE_OK){
     	fprintf(stderr, "sqlite3_exec: %s\n", err);
     	return -1;
     }
 
     if (result->head == NULL){
-    	return -1;
+    	return 0;
     }
 
-	return 0;
+	return 1;
 	
 }
 			
@@ -75,7 +75,7 @@ int party_get(dhanda *app, party_filter filter, struct list *result)
     }
 
     if(result->head == NULL){
-    	return -1;
+    	return 0;
     }
 
     return 1;

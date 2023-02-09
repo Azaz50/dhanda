@@ -24,6 +24,7 @@ typedef struct txn_filter {
 
 int txn_init(dhanda *app);
 int txn_add(dhanda *app, txn *txn);
+int txn_delete(struct dhanda *app, int pid);
 int txn_findbyid(dhanda *app, int id, txn *result);
 int txn_search(dhanda *app, char *query, struct list *result);
 int txn_get(dhanda *app, txn_filter filter, struct list *result);
