@@ -38,6 +38,8 @@ void ui_party_create(dhanda *app)
     input_amount(&p.amount, validate_amount);
   
 
+    time(&p.cat);
+    time(&p.uat);
 
       
 	reset(); 

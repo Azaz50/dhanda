@@ -2,7 +2,7 @@
 #include <dhanda/txn.h>
 
 int put_in_txn_struct(void *ptr, int ncols, char **values, char **fields);
-int put_in_txn_list(void *ptr, int ncols, char **values, char, char **fields);
+int put_in_txn_list(void *ptr, int ncols, char **values, char **fields);
 
 int txn_findbyid(dhanda *app, int id, txn *result)
 {
@@ -11,12 +11,17 @@ int txn_findbyid(dhanda *app, int id, txn *result)
 	char sql[1024];
 
 	sprintf(sql, "SELECT * FROM transactions WHERE id = %d", id);
+	result->id = 0;
+
 	ret = sqlite3_exec(app->db, sql, put_in_txn_struct, (void *) result, &err);
 
 	if (ret != SQLITE_OK){
 		fprintf(stderr, "sqlite3_exec error : %s\n", err);
 		return -1;
 	}
+	 if(result->id == 0){
+    	return 0;
+    }
 	return 1;
 }
 
@@ -34,8 +39,13 @@ int txn_search(dhanda *app, char *query, struct list *result)
 
 	ret = sqlite3_exec(app->db, sql, put_in_txn_list, (void *) result, &err);
 
-	if (result->head == NULL){
+	if (ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec error : %s\n", err);
 		return -1;
+	}
+
+	if (result->head == NULL){
+		return 0;
 	}
 
 	return 1;
@@ -59,7 +69,7 @@ int txn_findbytype(dhanda *app, int type, struct list *result)
 		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
 int txn_get(dhanda *app, txn_filter filter, struct list *result)
@@ -86,6 +96,7 @@ int txn_get(dhanda *app, txn_filter filter, struct list *result)
 
 
 int put_in_txn_struct(void *ptr, int ncols, char **values, char **fields){
+
 	txn *temp = (txn *) ptr;
 
 	temp->id = (int) atoi(values[0]);
@@ -99,7 +110,8 @@ int put_in_txn_struct(void *ptr, int ncols, char **values, char **fields){
 
 }
 
-int put_in_txn_list(void *ptr, int ncols, char **values, char, char **fields){
+int put_in_txn_list(void *ptr, int ncols, char **values, char **fields){
+	
 	Node *node;
 	txn temp = {};
 

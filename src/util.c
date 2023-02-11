@@ -174,20 +174,20 @@ void updated_at(time_t t)
 
 }
 
-void * created_time(time_t t)
+void *created_time(time_t t)
 {
 	struct tm *tm;
 	char *timestr = malloc(sizeof(char) * 128);
 
 	tm = localtime(&t);
 
-	strftime(timestr, sizeof(timestr), "%Y-%m-%d %T", tm);
+	strftime(timestr, 128, "%Y-%m-%d %T", tm);
 	return timestr;
 
 }
 
 
-void * updated_time(time_t t)
+void *updated_time(time_t t)
 {
 	struct tm *tm;
 	
@@ -195,7 +195,7 @@ void * updated_time(time_t t)
 
 	tm = localtime(&t);
 
-	strftime(timestr, sizeof(timestr), "%Y-%m-%d %T", tm);
+	strftime(timestr, 128, "%Y-%m-%d %T", tm);
 	
 	return timestr;
 
@@ -203,9 +203,11 @@ void * updated_time(time_t t)
 
 time_t unix_time(char *timestr){
 	struct tm tm = {};
+	
 	strptime(timestr, "%Y-%m-%d %T", &tm);
 
 	time_t t = mktime(&tm);
+
 	return t;
 }
 
@@ -216,6 +218,7 @@ void input_pid(dhanda *app, int *pid, int (*validator)(char *)){
 
 	while(1){
 		printf("> ");
+		get_string(pd, sizeof(pd));
 		if(validator(pd) == 0){
 			long ret = strtol(pd, NULL, 10);
 			*pid = (int)ret;

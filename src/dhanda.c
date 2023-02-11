@@ -188,11 +188,11 @@ static void dhanda_db_init(dhanda *app){
 	      "CREATE TABLE transactions("
 	      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
 	      "amount INTEGER DEFAULT 0,"
-	      "type CHAR(2),"
-	      "party_id INTEGER UNSIGNED,"
 	      "created_at DATETIME NOT NULL,"
-	      "updated_at DATETIME NOT NULL,"
-	      "FOREIN KEY(party_id) REFERENCES parties(id)"
+	      "type INTEGER,"
+	      "desc VARCHAR(64),"
+	      "party_id INTEGER,"
+	      "FOREIGN KEY(party_id) REFERENCES parties(id)"
 	    ")";  
 
 
