@@ -17,22 +17,25 @@ void ui_txn_show(struct dhanda *app)
 	centreprint("DHANDA > TRANSACTION > SHOW");
 	printf("\n\n");
 	reset();
-	printf("%-10s %-10s %-10s %-10s %-10s %-10s", "ID", 
-												  "AMOUNT",
-												  "CAT",
-												  "TYPE",
-												  "PARTY_ID",
-												  "DESC");
-	printf("\n\n");
-	
-	printf("%-10d %-10d %-10ld %-10d %-10d %s\n\n", t->id, 
-										  t->amount, 
-										  t->cat, 
-										  t->type,
-										  t->party_id,
-										  t->desc);
-		
-	
 
+	int n = strlen(t->desc);
+  printf("%-10s %-10s %-10s %-10s %-*s %s", "ID", 
+                                          "AMOUNT ",
+                                          "TYPE",
+                                          "PARTY_ID",
+                                          n, "DESC",
+                                          "   CAT");
+  printf("\n\n");
+  printf("%-10d %-10d %-10d %-10d %-*s", t->id, 
+                                      t->amount,
+                                      t->type,
+                                      t->party_id,
+                                      n, t->desc);
+
+   printf("   ");
+	created_at(t->cat);
+	printf("\n\n");
+
+	
 }
 
