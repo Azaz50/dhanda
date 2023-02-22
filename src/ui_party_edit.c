@@ -47,6 +47,12 @@ void ui_party_edit(struct dhanda *app)
 	printf("AMOUNT     :  ");
 	input_amount(&new_party->amount, validate_amount);
 
+	time(&new_party->uat);
+
+	party_insert_in_list(app, new_party);
+	ui_party_show(app);
+
+
 	printf("\n");
 
 	
