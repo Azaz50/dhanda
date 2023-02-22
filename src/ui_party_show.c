@@ -8,9 +8,8 @@ void ui_party_show(struct dhanda *app)
 	int id;
 	party *p;
 
-	//char local_sql[1024];
-        char *err = 0;
-        int ret;
+    char *err = 0;
+    int ret;
   
 	debug_print("");
 	p = party_first_in_list(app);
@@ -39,11 +38,11 @@ void ui_party_show(struct dhanda *app)
 
 	printf("   CREATED AT : ");
 	created_at(p->cat);
-
-	printf("\n");
+	printf("\n\n");
 
 	printf("   UPDATED AT : ");
 	updated_at(p->uat);
+	printf("\n\n");
 
 	reset();
 
