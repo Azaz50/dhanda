@@ -57,6 +57,8 @@ static struct {
 
 static int quit;
 
+#if defined(TERMINAL_APP)
+
 int main(int argc, char *argv[])
 {
 	int len;
@@ -99,6 +101,8 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+#endif
 
 void
 dhanda_init_app(struct dhanda *app)
@@ -451,7 +455,11 @@ dhanda_command_edit(dhanda *app)
 			ui_party_edit(app);
 
 			new_party = party_second_in_list(app);
+
 			ret = party_update(app, &p, new_party);
+			ui_party_show(app);
+
+
 			if (ret == -1) {
 				fprintf(stderr, "party_udpate error\n");
 				return;
