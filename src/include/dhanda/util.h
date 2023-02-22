@@ -64,6 +64,16 @@ void * created_time(time_t t);
 
 time_t unix_time(char *timestr);
 
+int 
+cb_party_list(void *list, int ncols, char **values, char **fields);
+int
+cb_party_struct(void *ptr, int ncols, char **values, char **fields);
+
+int put_in_txn_struct(void *ptr, int ncols, char **values, char **fields);
+int put_in_txn_list(void *ptr, int ncols, char **values, char **fields);
+
+
+
 
 
 void sky();

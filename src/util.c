@@ -2,6 +2,8 @@
 #include <dhanda/util.h>
 #include <regex.h>
 #include <dhanda/party.h>
+#include <dhanda/txn.h>
+
 
 int get_line(char line[], int size)
 {
@@ -317,6 +319,86 @@ int validate_type(char *str)
 
 		return 0;
 }
+
+int
+cb_party_list(void *list, int ncols, char **values, char **fields){
+	party p = {};
+	party *ptr;
+	Node *node;
+	
+	char *cat = created_time(ptr->cat);
+    char *uat = updated_time(ptr->uat);
+
+	p.id = atoi(values[0]);
+	strcpy(p.fname, values[1]);
+	strcpy(p.lname, values[2]);
+	strcpy(p.phone, values[3]);
+	p.amount = atoi(values[4]);
+	p.cat = unix_time(values[5]);
+	p.uat = unix_time(values[6]);
+
+	node = list_new_node((struct list *) list, (void *) &p);
+	list_insert_end((struct list *) list, node);
+
+	return SQLITE_OK;
+
+}	
+
+int
+cb_party_struct(void *ptr, int ncols, char **values, char **fields){
+	party *p = (party *) ptr;
+
+	p->id = (int)atoi(values[0]);
+	strcpy(p->fname, values[1]);
+	strcpy(p->lname, values[2]);
+	strcpy(p->phone, values[3]);
+	p->amount = atoi(values[4]);
+	p->cat = unix_time(values[5]);
+	p->uat = unix_time(values[6]);
+
+	return SQLITE_OK;
+
+
+}	
+
+
+
+int put_in_txn_struct(void *ptr, int ncols, char **values, char **fields){
+
+	txn *temp = (txn *) ptr;
+
+	temp->id = (int) atoi(values[0]);
+	temp->amount = (int) atoi(values[1]);
+	temp->cat = unix_time(values[2]);
+	temp->type = (int) atoi(values[3]);
+	strcpy(temp->desc, values[4]);
+	temp->party_id = (int) atoi(values[5]);
+
+	return SQLITE_OK;
+
+}
+
+int put_in_txn_list(void *ptr, int ncols, char **values, char **fields){
+	
+	Node *node;
+	txn temp = {};
+
+	temp.id = (int) atoi(values[0]);
+	temp.amount = (int) atoi(values[1]);
+	temp.cat = unix_time(values[2]);
+	temp.type = (int) atoi(values[3]);
+	strcpy(temp.desc, values[4]);
+	temp.party_id = (int) atoi(values[5]);
+
+	node = list_new_node((struct list *) ptr, (void *) &temp);
+	assert(node != NULL);
+	list_insert_end((struct list *) ptr, node);
+
+	return SQLITE_OK;
+}
+
+
+
 
 
 

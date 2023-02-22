@@ -2,6 +2,146 @@
 #include <dhanda/txn.h>
 
 
+
+int txn_add(dhanda *app, txn *txn)
+{
+
+    char local_sql[1024];
+    char *err = NULL;
+    int ret;
+
+
+	char *cat = created_time(txn->cat);
+
+    sprintf(local_sql, "INSERT INTO transactions(amount, created_at, type, desc, party_id) VALUES ('%d', '%s', '%d', '%s', '%d')",txn->amount, cat, txn->type, txn->desc, txn->party_id);
+
+	ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
+
+	 if (ret != SQLITE_OK) {
+        // fprintf(stderr, "sqlite3_exec: %s\n", err);
+        // ret = -1;
+        printf("Txn error %s\n", err);
+        exit(EXIT_FAILURE);
+    }else{
+        ret = 1;
+    }
+
+     txn->id = sqlite3_last_insert_rowid(app->db);
+     free(err);
+
+    return ret;
+
+}
+
+int txn_delete(struct dhanda *app, int pid){
+	int ret;
+	char *err = NULL;
+	char sql[1024];
+
+	sprintf(sql, "DELETE FROM transactions WHERE party_id = %d", pid);
+
+	ret = sqlite3_exec(app->db, sql, NULL, NULL, &err);
+	if (ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec error : %s\n", err);
+		return -1;
+	}
+
+	return 0;
+}
+
+
+int txn_findbyid(dhanda *app, int id, txn *result)
+{
+	int ret;
+	char *err = NULL;
+	char sql[1024];
+
+	sprintf(sql, "SELECT * FROM transactions WHERE id = %d", id);
+	result->id = 0;
+
+	ret = sqlite3_exec(app->db, sql, put_in_txn_struct, (void *) result, &err);
+
+	if (ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec error : %s\n", err);
+		return -1;
+	}
+	 if(result->id == 0){
+    	return 0;
+    }
+	return 1;
+}
+
+
+	
+int txn_search(dhanda *app, char *query, struct list *result)
+{
+	int ret;
+	char *err;
+	char sql[1024];
+
+	int pid = atoi(query);
+
+	sprintf(sql, "SELECT * FROM transactions WHERE party_id = %d", pid);
+
+	ret = sqlite3_exec(app->db, sql, put_in_txn_list, (void *) result, &err);
+
+	if (ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec error : %s\n", err);
+		return -1;
+	}
+
+	if (result->head == NULL){
+		return 0;
+	}
+
+	return 1;
+}
+
+int txn_findbytype(dhanda *app, int type, struct list *result)
+{	
+	int ret;
+	char *err = NULL;
+	char sql[1024];
+
+	sprintf(sql, "SELECT * FROM transactions WHERE type = %d", type);
+
+	ret = sqlite3_exec(app->db, sql,put_in_txn_list, (void *) result, &err);
+	if (ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec error : %s\n", err);
+		return -1;
+	}
+
+	if (result->head == NULL){
+		return 0;
+	}
+
+	return 1;
+}
+
+int txn_get(dhanda *app, txn_filter filter, struct list *result)
+{
+	int ret;
+	char *err = NULL;
+	char sql[1024];
+
+	sprintf(sql, "SELECT * FROM transactions");
+
+	ret = sqlite3_exec(app->db, sql, put_in_txn_list, (void *)result, &err);
+	if(ret != SQLITE_OK){
+		fprintf(stderr, "sqlite3_exec error : %s\n", err);
+		return -1;
+	}
+
+	if(result->head == NULL){
+		return 0;
+	}
+
+	return 1;
+
+}
+
+
+
 void
 txn_insert_in_list(dhanda *app, txn *t)
 {
@@ -40,6 +180,4 @@ txn_second_in_list(dhanda *app)
 
 	return t;
 }
-
-
 

@@ -39,5 +39,10 @@ void txn_insert_in_list(dhanda *app, txn *p);
 txn *txn_first_in_list(dhanda *app);
 txn *txn_second_in_list(dhanda *app);
 
+
+int put_in_txn_struct(void *ptr, int ncols, char **values, char **fields);
+int put_in_txn_list(void *ptr, int ncols, char **values, char **fields);
+
+
 #endif
 
