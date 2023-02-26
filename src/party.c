@@ -2,8 +2,6 @@
 #include <dhanda/party.h>
 
 
-
-
 int party_add(dhanda *app, party *party)
 {
     char local_sql[1024];
