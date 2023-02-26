@@ -5,14 +5,15 @@
 #include <kore/kore.h>
 #include <kore/http.h>
 #include <kore/seccomp.h>
+#include "dhanda/api_util.h"
 
 
 
 struct kore_json_item * 
 party_struct_to_korejson(struct party *p)
 {
-	struct kore_json_item *item;
-	struct kore_json_item *result;
+	struct kore_json_item *result, *item;
+
 
 	result = kore_json_create_object(NULL, NULL);
 
@@ -30,8 +31,7 @@ party_struct_to_korejson(struct party *p)
 struct kore_json_item *
 txn_struct_to_korejson(struct txn *t)
 {
-	struct kore_json_item *item;
-	struct kore_json_item *result;
+	struct kore_json_item *result, *item;
 
 	result = kore_json_create_object(NULL, NULL);
 
@@ -45,5 +45,87 @@ txn_struct_to_korejson(struct txn *t)
 
 	return result;
 }
+
+void
+party_list_to_korejson(struct list *parties, struct kore_json *json)
+{
+	Node *ptr;
+	struct party *party_ptr;
+	struct kore_json_item *item, *array;
+ 
+ 	json->root = kore_json_create_object(NULL, NULL);
+
+ 	array = kore_json_create_array(json->root, "parties");	
+
+	ptr = parties->head;
+
+	while (ptr) {
+		party_ptr = (struct party *) ptr->data;
+		item = party_struct_to_korejson(party_ptr);
+		kore_json_item_attach(array, item);
+
+		ptr = ptr->next;
+	}
+}
+
+
+void
+txn_list_to_korejson(struct list *transaction, struct kore_json *json)
+{
+	Node *ptr;
+	struct txn *txn_ptr;
+	struct kore_json_item *item, *array;
+ 
+ 	json->root = kore_json_create_object(NULL, NULL);
+
+ 	array = kore_json_create_array(json->root, "transaction");	
+
+	ptr = transaction->head;
+
+	while (ptr) {
+		txn_ptr = (struct txn *) ptr->data;
+		item = txn_struct_to_korejson(txn_ptr);
+		kore_json_item_attach(array, item);
+
+		ptr = ptr->next;
+	}
+}
+
+
+int kore_apputil_extract_route_ids(const char *path, ...)
+{
+	va_list arg;
+	size_t *id;
+	int ret, err;
+	char *parts[16];
+	char *route = kore_strdup(path);
+	char *part;
+
+	ret = 0;
+	va_start(arg, path);
+	kore_split_string(route, "/", parts, sizeof(parts) / sizeof(parts[0]));
+	for (int i = 0; parts[i] != NULL; ++i) {
+		part = parts[i];
+		while (*part) {
+			if (!isdigit(*part)) break;
+			++part;
+		}
+		/*If part has left something then it's not a number, skip it */
+		if (*part) continue;
+		id = va_arg(arg, size_t *);
+		*id = kore_strtonum64(parts[i], 0, &err);
+		if (err == KORE_RESULT_ERROR) {
+			ret = -1;
+			break;
+		}
+	}
+
+	va_end(arg);
+	kore_free(route);
+
+	return ret;
+}
+
+
 
 #endif
