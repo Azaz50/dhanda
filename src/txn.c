@@ -1,5 +1,6 @@
 #include <dhanda/dhanda.h>
 #include <dhanda/txn.h>
+#include <dhanda/sqlite3.h>
 
 
 
