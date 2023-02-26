@@ -52,4 +52,14 @@ TASK
 ### UI
 - Add bg color in header and footer
 - make space for status bar (show stats on the status bar)
-- 
+- Need to show the correct statistics on first screen.
+-Remove Assertion from everywhere. Handle it.
+-Party Edit is not working.
+-Delete operation should ask for confirmation first before deleting the record.
+-Deleting a party should delete all transactions of that party.
+-Regular expression error (regcomp) should be printed using debug_print() function.
+-Add pagination command (next, prev, last, first, mid).
+-Show Party name instead of Party ID in transaction list screen.
+-Show date and time (both) of creation of record in show screen.
+-Show last 10 transaction below Party detail in Party Show screen.
+
