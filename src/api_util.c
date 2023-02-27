@@ -39,23 +39,22 @@ txn_struct_to_korejson(struct txn *t)
 	item = kore_json_create_string(result, "amount", t->amount);
 	item = kore_json_create_string(result, "type", t->type);
 	item = kore_json_create_string(result, "desc", t->desc);
-	item = kore_json_create_integer(result, "amount", t->amount);
 	item = kore_json_create_integer_u64(result, "created_at", t->cat);
 	item = kore_json_create_integer(result, "party_id", t->party_id);
 
 	return result;
 }
 
-void
-party_list_to_korejson(struct list *parties, struct kore_json *json)
+struct kore_json_item * 
+party_list_to_korejson(struct list *parties)
 {
 	Node *ptr;
 	struct party *party_ptr;
-	struct kore_json_item *item, *array;
+	struct kore_json_item *root, *item, *array;
  
- 	json->root = kore_json_create_object(NULL, NULL);
+    root = kore_json_create_object(NULL, NULL);
 
- 	array = kore_json_create_array(json->root, "parties");	
+ 	array = kore_json_create_array(root, "parties");	
 
 	ptr = parties->head;
 
@@ -66,19 +65,19 @@ party_list_to_korejson(struct list *parties, struct kore_json *json)
 
 		ptr = ptr->next;
 	}
+	return root;
 }
 
-
-void
-txn_list_to_korejson(struct list *transaction, struct kore_json *json)
+struct kore_json_item * 
+txn_list_to_korejson(struct list *transaction)
 {
 	Node *ptr;
 	struct txn *txn_ptr;
-	struct kore_json_item *item, *array;
+	struct kore_json_item *root, *item, *array;
  
- 	json->root = kore_json_create_object(NULL, NULL);
+ 	root = kore_json_create_object(NULL, NULL);
 
- 	array = kore_json_create_array(json->root, "transaction");	
+ 	array = kore_json_create_array(root, "transaction");	
 
 	ptr = transaction->head;
 
@@ -89,6 +88,7 @@ txn_list_to_korejson(struct list *transaction, struct kore_json *json)
 
 		ptr = ptr->next;
 	}
+	return root;
 }
 
 

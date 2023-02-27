@@ -132,7 +132,7 @@ api_party_get(struct http_request *req)
 
 	result = list_create(sizeof(struct party));
 	party_get(&app, filter, result);
-	party_list_to_korejson(result, &json);
+	json.root = party_list_to_korejson(result);
 
 	kore_buf_init(&buf, 1024);
 	kore_json_item_tobuf(json.root, &buf);
@@ -155,13 +155,13 @@ api_txn_get(struct http_request *req)
 	struct kore_json json = {};
 	struct kore_buf buf;
 
-	printf("OK\n");
 
 	http_populate_get(req);
 
 	result = list_create(sizeof(struct txn));
 	txn_get(&app, filter, result);
-	txn_list_to_korejson(result, &json);
+
+	json.root = txn_list_to_korejson(result);
 
 	kore_buf_init(&buf, 1024);
 	kore_json_item_tobuf(json.root, &buf);
@@ -304,7 +304,7 @@ api_party_details(struct http_request *req)
 	}
 
     txn_get(&app, tfilter, result);
-	txn_list_to_korejson(result, &json);
+	txn_list_to_korejson(result);
 
 	kore_buf_init(&buf, 1024);
 	kore_json_item_tobuf(json.root, &buf);
