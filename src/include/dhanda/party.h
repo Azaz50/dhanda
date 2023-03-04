@@ -28,6 +28,7 @@ int party_findbyid(dhanda *app, int id, party *result);
 int party_search(dhanda *app, char *query, struct list *result);
 int party_get(dhanda *app, party_filter filter, struct list *result);
 
+
 /* Handy functions for passing data from Data layer to UI layer, since
  * UI functions only takes one argument and are called using callback
  * there is no way to call a callback with different type/number of
