@@ -321,7 +321,7 @@ dhanda_command_party_home(dhanda *app)
 	debug_print("");
 	party_filter filter = {
 		.page=1,
-		.items=10,
+		.items=5,
 	};
 	party_get(app, filter, app->party_list);
 	/* Set party context (since user entered in party screen) to perform
