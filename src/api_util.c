@@ -36,8 +36,8 @@ txn_struct_to_korejson(struct txn *t)
 	result = kore_json_create_object(NULL, NULL);
 
 	item = kore_json_create_integer(result, "id", t->id);
-	item = kore_json_create_string(result, "amount", t->amount);
-	item = kore_json_create_string(result, "type", t->type);
+	item = kore_json_create_integer(result, "amount", t->amount);
+	item = kore_json_create_integer(result, "type", t->type);
 	item = kore_json_create_string(result, "desc", t->desc);
 	item = kore_json_create_integer_u64(result, "created_at", t->cat);
 	item = kore_json_create_integer(result, "party_id", t->party_id);
