@@ -120,7 +120,7 @@ cleanup:
 
 }
 
-int
+/*int
 api_party_get(struct http_request *req)
 {
 	struct list *result;
@@ -132,6 +132,7 @@ api_party_get(struct http_request *req)
 
 	result = list_create(sizeof(struct party));
 	party_get(&app, filter, result);
+
 	json.root = party_list_to_korejson(result);
 
 	kore_buf_init(&buf, 1024);
@@ -145,33 +146,87 @@ cleanup:
 	kore_json_item_free(json.root);
 
 	return KORE_RESULT_OK;
-}
+}*/
 
 int
-api_txn_get(struct http_request *req)
+api_party_get(struct http_request *req)
 {
+	int ret, page, items;
 	struct list *result;
-	txn_filter filter = {};
+	party_filter filter = {};
 	struct kore_json json = {};
 	struct kore_buf buf;
-
+	char *ptr;
+	int err = 0;
 
 	http_populate_get(req);
 
-	result = list_create(sizeof(struct txn));
-	txn_get(&app, filter, result);
+	ret = http_argument_get_uint32(req, "page", &page);
+	if (!ret) page = 1;
 
-	json.root = txn_list_to_korejson(result);
+	ret = http_argument_get_uint32(req, "items", &items);
+	if (!ret) items = 50;
+
+	filter.page = page;
+	filter.items = items;
+
+	result = list_create(sizeof(struct party));
+	party_get(&app, filter, result);
+
+	json.root = party_list_to_korejson(result);
 
 	kore_buf_init(&buf, 1024);
 	kore_json_item_tobuf(json.root, &buf);
 
+    http_response_header(req, "content-type", "application/json");
 	http_response(req, 200, buf.data, buf.offset);
 
 
 cleanup:
 	if (result) list_delete_all(result);
 	kore_json_item_free(json.root);
+
+	return KORE_RESULT_OK;
+}
+
+int
+api_txn_get(struct http_request *req)
+{
+	int ret, page, items;
+	struct list *result;
+	txn_filter filter = {};
+	struct kore_json json = {};
+	struct kore_buf buf;
+	int err = 0;
+
+
+	http_populate_get(req);
+
+	ret = http_argument_get_uint32(req, "page", &page);
+	if (!ret) page = 1;
+
+	ret = http_argument_get_uint32(req, "items", &items);
+	if (!ret) items = 50;
+
+	filter.page = page;
+	filter.items = items;
+
+	result = list_create(sizeof(struct txn));
+	txn_get(&app, filter, result);
+
+	json.root = txn_list_to_korejson(result);
+	
+	kore_buf_init(&buf, 1024);
+	kore_json_item_tobuf(json.root, &buf);
+ 
+    http_response_header(req, "content-type", "application/json");
+	http_response(req, 200, buf.data, buf.offset);
+	
+
+
+cleanup:
+	if (result) list_delete_all(result);
+	// kore_json_item_free(json.root);
 
 	return KORE_RESULT_OK;
 }
@@ -191,10 +246,7 @@ int api_party_update(struct http_request *req){
 		goto cleanup;
 	}
 
-	if (kore_apputil_extract_route_ids(req->path, &id) != 1){
-        http_response(req, 400, NULL, 0);
-        return KORE_RESULT_ERROR;
-    }
+	kore_apputil_extract_route_ids(req->path, &id);
 
 	if (party_findbyid(&app, id, &result) != 1){
 		http_response(req, 400, NULL, 0);
@@ -233,20 +285,24 @@ cleanup:
 int api_party_delete(struct http_request *req)
 {
     int id;
-    int result;
+    struct party result = {};
+    struct party_kore_json;
+    struct party_kore_json_item *items;
 
-    if (kore_apputil_extract_route_ids(req->path, &id) != 1) {
-        http_response(req, 400, NULL, 0);
-        return KORE_RESULT_ERROR;
-    }
+    http_populate_get(req);
 
-    result = party_delete(&app, id);
-    if (result == -1) {
-        http_response(req, 404, NULL, 0);
-        return KORE_RESULT_ERROR;
-    }
+    kore_apputil_extract_route_ids(req->path, &id);
 
-    http_response(req, 204, NULL, 0);
+    if(party_findbyid(&app, id, &result) != 1){
+		http_response(req, 400, NULL, 0);
+		return KORE_RESULT_ERROR;
+	}
+
+    //txn_delete(&app, result.id);
+    party_delete(&app, &result);
+    printf("OK\n");
+
+    http_response(req, 200, NULL, 0);
     return KORE_RESULT_OK;
 }
 
@@ -272,48 +328,32 @@ int api_txn_delete(struct http_request *req)
 
 
 int
-api_party_details(struct http_request *req)
+api_party_show(struct http_request *req)
 {
-	struct list *result;
-	party_filter filter = {};
-	txn_filter tfilter = {};
-	struct kore_json json = {};
-	struct kore_buf buf;
+	struct party result = {};
+	struct kore_json json;
 	int id;
-
+  
 	http_populate_get(req);
 
-	result = list_create(sizeof(struct party));
-
-	if (kore_apputil_extract_route_ids(req->path, &id) != 1){
-        http_response(req, 400, NULL, 0);
-        return KORE_RESULT_ERROR;
-    }
+	kore_apputil_extract_route_ids(req->path, &id);
+     
 
 	if (party_findbyid(&app, id, &result) != 1){
 		http_response(req, 400, NULL, 0);
 		return KORE_RESULT_ERROR;
 	}
 
-	party_get(&app, filter, result);
-	party_struct_to_korejson(result);
 
-	if (txn_findbyid(&app, id, &result) != 1){
-		http_response(req, 400, NULL, 0);
-		return KORE_RESULT_ERROR;
-	}
+    struct kore_json_item *res_json;
+	struct kore_buf buf;
+    
+	res_json = party_struct_to_korejson(&result);
 
-    txn_get(&app, tfilter, result);
-	txn_list_to_korejson(result);
+	kore_buf_init(&buf, 512);
+	kore_json_item_tobuf(res_json, &buf);
 
-	kore_buf_init(&buf, 1024);
-	kore_json_item_tobuf(json.root, &buf);
-
-	http_response(req, 200, buf.data, buf.offset);
-
-cleanup:
-	if (result) list_delete_all(result);
-	kore_json_item_free(json.root);
+	http_response(req, 201, buf.data, buf.offset);
 
 	return KORE_RESULT_OK;
 }
