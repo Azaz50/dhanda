@@ -33,19 +33,20 @@ int party_add(dhanda *app, party *party)
 
 
 
-int party_delete(dhanda *app, party *party)        // return 1 for succes
-                                                  // return -1 for failure
+int party_delete(dhanda *app, party *party)        // return 1 for succes                                                 // return -1 for failure
 {
     
     char local_sql[1024];
 	char *err = NULL;
     int ret;
+    struct list *result;
 
 
 	
 	sprintf(local_sql, "DELETE FROM parties WHERE id = %d", party->id);
+	txn_search(app, party->id, result);
 
-	ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
+	ret = sqlite3_exec(app->db, local_sql, put_in_txn_list, (void *)result, &err);
 
     if (ret != SQLITE_OK) {
         fprintf(stderr, "party_delete(): sqlite3_exec error: %s\n", err);
@@ -105,11 +106,9 @@ int party_search(dhanda *app, char *query, struct list *result)
 	
 }
 			
-
+/*
 int party_get(dhanda *app, party_filter filter, struct list *result)
 {
-	
-
 	char local_sql[1024];
     char *err = NULL;
     int ret;
@@ -126,10 +125,32 @@ int party_get(dhanda *app, party_filter filter, struct list *result)
     if(result->head == NULL){
     	return 0;
     }
-
     return 1;
+}*/
 
+int party_get(dhanda *app, party_filter filter, struct list *result)
+{
+ 	int ret;
+ 	char *err = NULL;
+ 	char sql[1024];
+	int offset;
+
+	offset = (filter.page - 1) * filter.items;
+	sprintf(sql, "SELECT * FROM parties ORDER BY id DESC LIMIT %d OFFSET %d",
+			filter.items, offset);
+ 
+ 	ret = sqlite3_exec(app->db, sql, cb_party_list, (void *) result, &err);
+ 	if (ret != SQLITE_OK){
+ 		 fprintf(stderr, "party_get(): sqlite3_exec error: %s\n", err);
+         return -1;
+ 	}
+
+ 	if(result->head == NULL){
+    	return 0;
+    }
+    return 1;		
 }
+
 
 
 
