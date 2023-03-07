@@ -129,10 +129,8 @@ int txn_get(dhanda *app, txn_filter filter, struct list *result)
 	where_query[0] = '\0';
 	if (filter.has_query) {
 		sprintf(where_query,
-				"WHERE id LIKE '%%%d%%' OR "
-				"party_id LIKE '%%%d%%' OR "
-				"type LIKE '%%%d%%' ",
-				filter.query, filter.query, filter.query);
+				"WHERE party_id LIKE '%%%d%%' ",
+				filter.query);
 	}
 
 	offset = (filter.page - 1) * filter.items;
