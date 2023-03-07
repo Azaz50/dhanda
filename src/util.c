@@ -327,7 +327,7 @@ cb_party_list(void *list, int ncols, char **values, char **fields){
 	Node *node;
 	
 	char *cat = created_time(ptr->cat);
-    char *uat = updated_time(ptr->uat);
+  char *uat = updated_time(ptr->uat);
 
 	p.id = atoi(values[0]);
 	strcpy(p.fname, values[1]);
