@@ -208,8 +208,6 @@ api_txn_get(struct http_request *req)
 	int err = 0;
 	char *ptr;
 	
-
-
 	http_populate_get(req);
 
 	ret = http_argument_get_uint32(req, "page", &page);
@@ -242,7 +240,7 @@ api_txn_get(struct http_request *req)
 
 cleanup:
 	if (result) list_delete_all(result);
-	 kore_json_item_free(json.root);
+	kore_json_item_free(json.root);
 
 	return KORE_RESULT_OK;
 }
