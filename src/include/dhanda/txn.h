@@ -19,7 +19,8 @@ typedef struct txn_stat {
 typedef struct txn_filter {
 	int page;
 	int items;
-	// @TODO
+	char *query;
+	int has_query;
 } txn_filter;
 
 int txn_init(dhanda *app);
