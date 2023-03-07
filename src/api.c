@@ -62,6 +62,7 @@ api_party_add(struct http_request *req)
 	kore_buf_init(&buf, 512);
 	kore_json_item_tobuf(res_json, &buf);
 
+    http_response_header(req, "content-type", "application/json");
 	http_response(req, 201, buf.data, buf.offset);
 
 cleanup:
@@ -111,6 +112,7 @@ int api_txn_add(struct http_request *req){
 	kore_buf_init(&buf, 512);
 	kore_json_item_tobuf(res_json, &buf);
 
+    http_response_header(req, "content-type", "application/json");
 	http_response(req, 201, buf.data, buf.offset);
 
 cleanup:
@@ -167,6 +169,12 @@ api_party_get(struct http_request *req)
 	ret = http_argument_get_uint32(req, "items", &items);
 	if (!ret) items = 50;
 
+	ret = http_argument_get_string(req, "query", &ptr);
+	if (ret) {
+		filter.query = ptr;
+		filter.has_query = 1;
+	}
+
 	filter.page = page;
 	filter.items = items;
 
@@ -198,6 +206,8 @@ api_txn_get(struct http_request *req)
 	struct kore_json json = {};
 	struct kore_buf buf;
 	int err = 0;
+	char *ptr;
+	
 
 
 	http_populate_get(req);
@@ -207,6 +217,12 @@ api_txn_get(struct http_request *req)
 
 	ret = http_argument_get_uint32(req, "items", &items);
 	if (!ret) items = 50;
+
+	ret = http_argument_get_uint32(req, "party_id", &ptr);
+	if (ret) {
+		filter.query = ptr;
+		filter.has_query = 1;
+	}
 
 	filter.page = page;
 	filter.items = items;
@@ -226,7 +242,7 @@ api_txn_get(struct http_request *req)
 
 cleanup:
 	if (result) list_delete_all(result);
-	// kore_json_item_free(json.root);
+	 kore_json_item_free(json.root);
 
 	return KORE_RESULT_OK;
 }
@@ -242,6 +258,7 @@ int api_party_update(struct http_request *req){
 
 	kore_json_init(&json, req->http_body->data, req->http_body->length);
 	if (!kore_json_parse(&json)){
+        http_response_header(req, "content-type", "application/json");
 		http_response(req, 400, NULL, 0);
 		goto cleanup;
 	}
@@ -249,6 +266,7 @@ int api_party_update(struct http_request *req){
 	kore_apputil_extract_route_ids(req->path, &id);
 
 	if (party_findbyid(&app, id, &result) != 1){
+        http_response_header(req, "content-type", "application/json");
 		http_response(req, 400, NULL, 0);
 		return KORE_RESULT_ERROR;
 	}
@@ -273,7 +291,8 @@ int api_party_update(struct http_request *req){
 	
 	kore_buf_init(&buf, 512);
 	kore_json_item_tobuf(res_json, &buf);
-
+    
+    http_response_header(req, "content-type", "application/json");
 	http_response(req, 201, buf.data, buf.offset);
 
 cleanup:
@@ -286,43 +305,25 @@ int api_party_delete(struct http_request *req)
 {
     int id;
     struct party result = {};
-    struct party_kore_json;
-    struct party_kore_json_item *items;
+    struct kore_json json;
+	struct kore_json_item *item;
 
     http_populate_get(req);
 
     kore_apputil_extract_route_ids(req->path, &id);
 
     if(party_findbyid(&app, id, &result) != 1){
+        http_response_header(req, "content-type", "application/json");
 		http_response(req, 400, NULL, 0);
 		return KORE_RESULT_ERROR;
 	}
 
     //txn_delete(&app, result.id);
-    party_delete(&app, &result);
     printf("OK\n");
+    party_delete(&app, &result);
 
+    http_response_header(req, "content-type", "application/json");
     http_response(req, 200, NULL, 0);
-    return KORE_RESULT_OK;
-}
-
-int api_txn_delete(struct http_request *req)
-{
-    int id;
-    int result;
-
-    if (kore_apputil_extract_route_ids(req->path, &id) != 1) {
-        http_response(req, 400, NULL, 0);
-        return KORE_RESULT_ERROR;
-    }
-
-    result = txn_delete(&app, id);
-    if (result == -1) {
-        http_response(req, 404, NULL, 0);
-        return KORE_RESULT_ERROR;
-    }
-
-    http_response(req, 204, NULL, 0);
     return KORE_RESULT_OK;
 }
 
@@ -333,17 +334,16 @@ api_party_show(struct http_request *req)
 	struct party result = {};
 	struct kore_json json;
 	int id;
-  
+ 
 	http_populate_get(req);
 
 	kore_apputil_extract_route_ids(req->path, &id);
      
-
 	if (party_findbyid(&app, id, &result) != 1){
+        http_response_header(req, "content-type", "application/json");	
 		http_response(req, 400, NULL, 0);
 		return KORE_RESULT_ERROR;
 	}
-
 
     struct kore_json_item *res_json;
 	struct kore_buf buf;
@@ -353,6 +353,7 @@ api_party_show(struct http_request *req)
 	kore_buf_init(&buf, 512);
 	kore_json_item_tobuf(res_json, &buf);
 
+    http_response_header(req, "content-type", "application/json");
 	http_response(req, 201, buf.data, buf.offset);
 
 	return KORE_RESULT_OK;
