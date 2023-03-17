@@ -37,8 +37,10 @@ int txn_add(dhanda *app, txn *txn)
 int txn_delete(struct dhanda *app, int pid){
 	int ret;
 	char *err = NULL;
+	txn_filter filter = {};
 	char sql[1024];
 
+	int offset = (filter.page - 1) * filter.items;
 	sprintf(sql, "DELETE FROM transactions WHERE party_id = %d", pid);
 
 	ret = sqlite3_exec(app->db, sql, NULL, NULL, &err);
@@ -56,7 +58,10 @@ int txn_findbyid(dhanda *app, int id, txn *result)
 	int ret;
 	char *err = NULL;
 	char sql[1024];
+	txn_filter filter = {};
 
+
+	int offset = (filter.page - 1) * filter.items;
 	sprintf(sql, "SELECT * FROM transactions WHERE id = %d", id);
 	result->id = 0;
 
@@ -79,8 +84,12 @@ int txn_search(dhanda *app, char *query, struct list *result)
 	int ret;
 	char *err;
 	char sql[1024];
+	txn_filter filter = {};
+
 
 	int pid = atoi(query);
+
+	int offset = (filter.page - 1) * filter.items;
 
 	sprintf(sql, "SELECT * FROM transactions WHERE party_id = %d", pid);
 
@@ -103,7 +112,10 @@ int txn_findbytype(dhanda *app, int type, struct list *result)
 	int ret;
 	char *err = NULL;
 	char sql[1024];
+	txn_filter filter = {};
+	
 
+	int offset = (filter.page - 1) * filter.items;
 	sprintf(sql, "SELECT * FROM transactions WHERE type = %d", type);
 
 	ret = sqlite3_exec(app->db, sql,put_in_txn_list, (void *) result, &err);
@@ -129,8 +141,10 @@ int txn_get(dhanda *app, txn_filter filter, struct list *result)
 	where_query[0] = '\0';
 	if (filter.has_query) {
 		sprintf(where_query,
-				"WHERE party_id LIKE '%%%d%%' ",
-				filter.query);
+				"WHERE party_id LIKE '%%%d%%' OR "
+				"type LIKE '%%%d%%' OR "
+				"id LIKE '%%%d%%' ",
+				filter.query, filter.query, filter.query);
 	}
 
 	offset = (filter.page - 1) * filter.items;
@@ -153,6 +167,31 @@ int txn_get(dhanda *app, txn_filter filter, struct list *result)
 	return 1;
 
 }
+
+
+int txn_findby_pid(dhanda *app, txn_filter filter, int pid, struct list *result)
+{
+	int ret;
+	char sql[1024];
+	char *err = NULL;
+
+	int offset = (filter.page - 1) * filter.items;
+	sprintf(sql, "SELECT * FROM transactions WHERE party_id = %d", pid);
+
+	ret = sqlite3_exec(app->db, sql, put_in_txn_list, (void *) result, &err);
+	if (ret != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_exec error: %s\n", err);
+		return -1;
+	}
+
+	if (result->head == NULL) {
+		return 0;
+	}
+
+	return 1;
+	
+}
+
 
 
 
