@@ -329,32 +329,57 @@ int api_party_delete(struct http_request *req)
 int
 api_party_show(struct http_request *req)
 {
-	struct party result = {};
 	struct kore_json json;
-	int id;
- 
+	struct kore_json_item *item;
+	struct party result = {};
+	struct list *txn_result;
+	txn_filter filter = {};
+	int id, ret;
+	int page, items;
+	char *ptr = NULL;
+
 	http_populate_get(req);
 
 	kore_apputil_extract_route_ids(req->path, &id);
-     
-	if (party_findbyid(&app, id, &result) != 1){
-        http_response_header(req, "content-type", "application/json");	
+	
+	if (party_findbyid(&app, id, &result) != 1) {
 		http_response(req, 400, NULL, 0);
 		return KORE_RESULT_ERROR;
 	}
 
-    struct kore_json_item *res_json;
+	ret = http_argument_get_string(req, "includes", &ptr);
+
+	ret = http_argument_get_uint32(req, "page", &page);
+	if (!ret) page = 1;
+
+	ret = http_argument_get_uint32(req, "items", &items);
+	if (!ret) items = 50;
+
+	filter.page = page;
+	filter.items = items;
+
+	txn_result = list_create(sizeof(struct txn));
+	if (ptr) {
+		ret = txn_findby_pid(&app, filter, id, txn_result);
+	}
+
+
+	struct kore_json_item *res_json1, *res_json2;
 	struct kore_buf buf;
-    
-	res_json = party_struct_to_korejson(&result);
+	res_json1 = party_struct_to_korejson(&result);
+	res_json2 = txn_list_to_korejson(txn_result);
+	struct kore_json_item *temp = kore_json_find_array(res_json2, "transactions");
+	kore_json_item_attach(res_json1, temp);
 
-	kore_buf_init(&buf, 512);
-	kore_json_item_tobuf(res_json, &buf);
 
-    http_response_header(req, "content-type", "application/json");
-	http_response(req, 201, buf.data, buf.offset);
+	kore_buf_init(&buf, 1024);
+	kore_json_item_tobuf(res_json1, &buf);
+
+	http_response(req, 200, buf.data, buf.offset);
+
 
 	return KORE_RESULT_OK;
 }
 
 #endif
+
