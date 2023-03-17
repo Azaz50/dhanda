@@ -19,7 +19,7 @@ typedef struct txn_stat {
 typedef struct txn_filter {
 	int page;
 	int items;
-	char *query;
+	int query;
 	int has_query;
 } txn_filter;
 
@@ -31,6 +31,8 @@ int txn_search(dhanda *app, char *query, struct list *result);
 int txn_get(dhanda *app, txn_filter filter, struct list *result);
 int txn_findbytype(dhanda *app, int type, struct list *result);
 int txn_getstat(dhanda *app, txn_filter filter, txn_stat *result);
+int txn_findby_pid(dhanda *app, txn_filter filter, int pid, struct list *result);
+
 
 /* Handy functions for passing data from Data layer to UI layer, since
  * UI functions only takes one argument and are called using callback
