@@ -40,13 +40,13 @@ int party_delete(dhanda *app, party *party)        // return 1 for succes       
 	char *err = NULL;
     int ret;
     struct list *result;
+	party_filter filter = {};
 
-
+	int offset = (filter.page - 1) * filter.items;
 	
 	sprintf(local_sql, "DELETE FROM parties WHERE id = %d", party->id);
-	txn_search(app, party->id, result);
 
-	ret = sqlite3_exec(app->db, local_sql, put_in_txn_list, (void *)result, &err);
+	ret = sqlite3_exec(app->db, local_sql, cb_party_list, (void *)result, &err);
 
     if (ret != SQLITE_OK) {
         fprintf(stderr, "party_delete(): sqlite3_exec error: %s\n", err);
@@ -63,7 +63,9 @@ int party_findbyid(dhanda *app, int id, party *result)
 	char sql[256];                                             
 	int ret;
 	char *err = NULL;
+	party_filter filter = {};
 
+	int offset = (filter.page - 1) * filter.items;
 
 	sprintf(sql, "SELECT * FROM parties WHERE id = %d", id);
 
@@ -89,8 +91,10 @@ int party_search(dhanda *app, char *query, struct list *result)
 	int ret;
 	char sql[1024];
 	char *err = NULL;
+	party_filter filter = {};
 
-	sprintf(sql, "SELECT * FROM parties WHERE phone LIKE '%%%s%%' OR fname LIKE '%%%s%%'", query, query);
+	int offset = (filter.page - 1) * filter.items;
+	sprintf(sql, "SELECT * FROM parties WHERE phone LIKE '%%%s%%' OR fname LIKE '%%%s%%' OR fname LIKE '%%%s%%'", query, query, query);
     
     ret = sqlite3_exec(app->db, sql, cb_party_list, (void *)result, &err);
     if (ret != SQLITE_OK){
@@ -162,9 +166,6 @@ int party_get(dhanda *app, party_filter filter, struct list *result)
     return 1;		
 }
 
-
-
-
 int party_update(dhanda *app, party *old_party, struct party *new_party)
 {
 	party temp;
@@ -175,6 +176,9 @@ int party_update(dhanda *app, party *old_party, struct party *new_party)
 
 	char *cat = created_time(new_party->cat);
 	char *uat = updated_time(new_party->uat);
+	party_filter filter = {};
+
+	int offset = (filter.page - 1) * filter.items;
 
 	sprintf(local_sql, "UPDATE parties SET "
 		               "fname = '%s', lname = '%s',"
