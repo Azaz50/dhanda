@@ -77,7 +77,7 @@ txn_list_to_korejson(struct list *transaction)
  
  	root = kore_json_create_object(NULL, NULL);
 
- 	array = kore_json_create_array(root, "transaction");	
+ 	array = kore_json_create_array(root, "transactions");	
 
 	ptr = transaction->head;
 
