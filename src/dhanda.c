@@ -410,6 +410,9 @@ dhanda_command_show(dhanda *app)
 	Node *node;
 	int id;
 	int ret;
+/*	txn_filter filter = {};
+
+	int offset = (filter.page - 1) * filter.items;*/
 
 	debug_print("");
 	assert(app->cmd.argc == 2);
