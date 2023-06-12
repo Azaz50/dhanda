@@ -33,7 +33,7 @@ int party_add(dhanda *app, party *party)
 
 
 
-int party_delete(dhanda *app, party *party)        // return 1 for succes                                                 // return -1 for failure
+int party_delete(dhanda *app, party *party)        // return 1 for success                                                 // return -1 for failure
 {
     
     char local_sql[1024];
@@ -46,14 +46,14 @@ int party_delete(dhanda *app, party *party)        // return 1 for succes       
 	
 	sprintf(local_sql, "DELETE FROM parties WHERE id = %d", party->id);
 
-	ret = sqlite3_exec(app->db, local_sql, cb_party_list, (void *)result, &err);
+	ret = sqlite3_exec(app->db,local_sql,NULL,NULL, &err);
 
     if (ret != SQLITE_OK) {
         fprintf(stderr, "party_delete(): sqlite3_exec error: %s\n", err);
         return -1;
     } 
 
-    return 0;
+    return 1;
 }
 		
 
@@ -94,7 +94,7 @@ int party_search(dhanda *app, char *query, struct list *result)
 	party_filter filter = {};
 
 	int offset = (filter.page - 1) * filter.items;
-	sprintf(sql, "SELECT * FROM parties WHERE phone LIKE '%%%s%%' OR fname LIKE '%%%s%%' OR fname LIKE '%%%s%%'", query, query, query);
+	sprintf(sql, "SELECT * FROM parties WHERE phone LIKE '%%%s%%' OR fname LIKE '%%%s%%' OR lname LIKE '%%%s%%'", query, query, query);
     
     ret = sqlite3_exec(app->db, sql, cb_party_list, (void *)result, &err);
     if (ret != SQLITE_OK){
@@ -190,7 +190,6 @@ int party_update(dhanda *app, party *old_party, struct party *new_party)
 	ret = sqlite3_exec(app->db, local_sql, NULL, NULL, &err);
 
 	if(ret != SQLITE_OK){
-		
 		printf("update error %s\n", err);
 		exit(EXIT_FAILURE);
 	}
