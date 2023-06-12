@@ -36,11 +36,11 @@ void ui_party_create(dhanda *app)
 	
 
 	printf("  AMOUNT     :  ");
-        input_amount(&p.amount, validate_amount);
+    input_amount(&p.amount, validate_amount);
   
 
-        time(&p.cat);
-        time(&p.uat);
+    time(&p.cat);
+    time(&p.uat);
 
       
 	reset(); 
