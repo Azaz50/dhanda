@@ -1,98 +1,13 @@
 #ifndef TERMINAL_APP
 
-#include <dhanda/party.h>
-#include <dhanda/txn.h>
 #include <kore/kore.h>
 #include <kore/http.h>
-#include <kore/seccomp.h>
-#include "dhanda/api_util.h"
+#include <dhanda/api_util.h>
+#include <dhanda/dhanda.h>
 
 
-
-struct kore_json_item * 
-party_struct_to_korejson(struct party *p)
-{
-	struct kore_json_item *result, *item;
-
-
-	result = kore_json_create_object(NULL, NULL);
-
-	item = kore_json_create_integer(result, "id", p->id);
-	item = kore_json_create_string(result, "first_name", p->fname);
-	item = kore_json_create_string(result, "last_name", p->lname);
-	item = kore_json_create_string(result, "phone", p->phone);
-	item = kore_json_create_integer(result, "amount", p->amount);
-	item = kore_json_create_integer_u64(result, "created_at", p->cat);
-	item = kore_json_create_integer_u64(result, "updated_at", p->uat);
-
-	return result;
-}
-
-struct kore_json_item *
-txn_struct_to_korejson(struct txn *t)
-{
-	struct kore_json_item *result, *item;
-
-	result = kore_json_create_object(NULL, NULL);
-
-	item = kore_json_create_integer(result, "id", t->id);
-	item = kore_json_create_integer(result, "amount", t->amount);
-	item = kore_json_create_integer(result, "type", t->type);
-	item = kore_json_create_string(result, "desc", t->desc);
-	item = kore_json_create_integer_u64(result, "created_at", t->cat);
-	item = kore_json_create_integer(result, "party_id", t->party_id);
-
-	return result;
-}
-
-struct kore_json_item * 
-party_list_to_korejson(struct list *parties)
-{
-	Node *ptr;
-	struct party *party_ptr;
-	struct kore_json_item *root, *item, *array;
- 
-    root = kore_json_create_object(NULL, NULL);
-
- 	array = kore_json_create_array(root, "parties");	
-
-	ptr = parties->head;
-
-	while (ptr) {
-		party_ptr = (struct party *) ptr->data;
-		item = party_struct_to_korejson(party_ptr);
-		kore_json_item_attach(array, item);
-
-		ptr = ptr->next;
-	}
-	return root;
-}
-
-struct kore_json_item * 
-txn_list_to_korejson(struct list *transaction)
-{
-	Node *ptr;
-	struct txn *txn_ptr;
-	struct kore_json_item *root, *item, *array;
- 
- 	root = kore_json_create_object(NULL, NULL);
-
- 	array = kore_json_create_array(root, "transactions");	
-
-	ptr = transaction->head;
-
-	while (ptr) {
-		txn_ptr = (struct txn *) ptr->data;
-		item = txn_struct_to_korejson(txn_ptr);
-		kore_json_item_attach(array, item);
-
-		ptr = ptr->next;
-	}
-	return root;
-}
-
-
-int kore_apputil_extract_route_ids(const char *path, ...)
+int
+kore_apputil_extract_route_ids(const char *path, ...)
 {
 	va_list arg;
 	size_t *id;
@@ -110,7 +25,7 @@ int kore_apputil_extract_route_ids(const char *path, ...)
 			if (!isdigit(*part)) break;
 			++part;
 		}
-		/*If part has left something then it's not a number, skip it */
+		/* If part has left something then it's not a number, skip it */
 		if (*part) continue;
 		id = va_arg(arg, size_t *);
 		*id = kore_strtonum64(parts[i], 0, &err);
@@ -126,6 +41,79 @@ int kore_apputil_extract_route_ids(const char *path, ...)
 	return ret;
 }
 
+
+int
+util_http_json_error_response(struct http_request *req, struct kore_json_item *item, const char *field, int (*validator)(char *))
+{
+	int ret;
+	struct kore_json_item *err_item;
+	struct kore_buf buf;
+	char msg[1024];
+
+	if (item) {
+		if (item->type == KORE_JSON_TYPE_STRING) {
+			ret = validator(item->data.string);
+		} else if (item->type == KORE_JSON_TYPE_INTEGER) {
+			char b[64];
+			sprintf(b, "%d", (int) item->data.u64);
+			ret = validator(b);
+		}
+
+		if (ret == 0) {
+			return 0;
+		}
+	}
+
+	ret = -1;
+	if (item == NULL) {
+		sprintf(msg, "%s is required", field);
+	} else {
+		sprintf(msg, "%s is invalid", field);
+	}
+
+	err_item = kore_json_create_object(NULL, NULL);
+
+	kore_json_create_string(err_item, "msg", msg);
+
+	kore_buf_init(&buf, 128);
+	kore_json_item_tobuf(err_item, &buf);
+
+	http_response_header(req, "content-type", "application/json");
+	http_response(req, 400, buf.data, buf.offset);
+
+	kore_buf_cleanup(&buf);
+	kore_json_item_free(err_item);
+
+	return ret;
+}
+
+int
+util_http_response_msg(struct http_request *req, char *str)
+{
+	int ret;
+	char msg[1024];
+	struct kore_json_item *err_item;
+	struct kore_buf buf;
+
+
+	sprintf(msg, "error: %s", str);
+
+	err_item = kore_json_create_object(NULL, NULL);
+
+	kore_json_create_string(err_item, "msg", msg);
+
+	kore_buf_init(&buf, 128);
+	kore_json_item_tobuf(err_item, &buf);
+
+	http_response_header(req, "content-type", "application/json");
+	http_response(req, 400, buf.data, buf.offset);
+
+	kore_buf_cleanup(&buf);
+	kore_json_item_free(err_item);
+
+	return 0;
+
+}
 
 
 #endif
