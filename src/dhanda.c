@@ -197,7 +197,7 @@ static void dhanda_db_init(dhanda *app){
 	      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
 	      "amount INTEGER DEFAULT 0,"
 	      "created_at DATETIME NOT NULL,"
-	      "type INTEGER,"
+	      "type CHAR,"
 	      "desc VARCHAR(64),"
 	      "party_id INTEGER,"
 	      "FOREIGN KEY(party_id) REFERENCES parties(id)"
