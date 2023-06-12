@@ -5,8 +5,8 @@
 
 typedef struct party {
 	int id;
-	char fname[32];
-	char lname[32];
+	char fname[128];
+	char lname[128];
 	char phone[12];
 	int amount;
 	time_t cat;
@@ -18,6 +18,8 @@ typedef struct party_filter {
 	int items;
 	char *query;
 	int has_query;
+	int type;
+	int is_found;
 } party_filter;
 
 
