@@ -21,6 +21,8 @@ typedef struct txn_filter {
 	int items;
 	int query;
 	int has_query;
+	int type;
+	int is_found;
 } txn_filter;
 
 int txn_init(dhanda *app);
