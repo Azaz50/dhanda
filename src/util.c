@@ -67,6 +67,23 @@ int validate_name(char *str){
 	return 0;
 }
 
+int validate_desc(char *str){
+	char *pattern = "^.{1,256}$";
+	char buff[1024];
+	int err;
+	regex_t rgx;
+	if((err = regcomp(&rgx, pattern, REG_EXTENDED)) != 0){
+		return -1;
+	}
+	if(regexec(&rgx, str, 0, NULL, 0) == REG_NOMATCH){
+		return -1;
+	}
+	return 0;
+
+}
+
+
+
 void input_phone(char *input, int (*validator)(char *)){
 	char phone[10];
 
@@ -136,6 +153,29 @@ int validate_amount(char *str){
 	return 0;
 
 }
+int validate_amount_kore(int amount){
+    //Regular expression
+    char *pattern = "^[0-9]{1,10}$";
+    char buff[1024];
+    int err;
+    regex_t rgx;
+
+    // Convert integer to string
+    char str[11];
+    sprintf(str, "%d", amount);
+
+    if((err = regcomp(&rgx, pattern, REG_EXTENDED)) != 0){
+        regerror(err, &rgx, buff, sizeof(buff));
+        printf("%s\n", buff);
+        return -1;
+    }
+
+    if(regexec(&rgx, str, 0, NULL, 0) == REG_NOMATCH){
+        return -1;
+    }
+    return 0;
+}
+
 
 void title_case(char *str){
 	str[0] = toupper(str[0]);
@@ -323,7 +363,7 @@ int validate_type(char *str)
 int
 cb_party_list(void *list, int ncols, char **values, char **fields){
 	party p = {};
-	party *ptr;
+	party *ptr = (party *) list;
 	Node *node;
 	
 	char *cat = created_time(ptr->cat);
