@@ -49,7 +49,7 @@ int txn_delete(struct dhanda *app, int pid){
 		return -1;
 	}
 
-	return 0;
+	return 1;
 }
 
 
